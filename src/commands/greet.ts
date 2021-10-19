@@ -1,15 +1,15 @@
 import { CommandContext } from '../models/command_context';
 import { Command } from './command';
 
-export class PingCommand implements Command {
-    commandNames = ['ping'];
+export class GreetCommand implements Command {
+    commandNames = ['greet', 'hello'];
 
     getHelpMessage(commandPrefix: string): string {
-        return `Use ${commandPrefix}ping to ping me.`;
+        return `Use ${commandPrefix}greet to get a greeting.`;
     }
 
     async run(parsedUserCommand: CommandContext): Promise<void> {
-        await parsedUserCommand.originalMessage.reply('Pong! 🏓');
+        await parsedUserCommand.originalMessage.reply('hello, world! 👋🌎');
     }
 
     hasPermissionToRun(parsedUserCommand: CommandContext): boolean {

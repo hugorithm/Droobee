@@ -1,33 +1,32 @@
-const  { Client, Intents, DiscordAPIError, Collection } = require('discord.js');
+import { Client, Intents, DiscordAPIError, Message, Collection } from 'discord.js';
+import { BotCfg, cfg } from './cfg/cfg';
+import { CommandHandler } from './command_handler';
+
+
+
+function validateConfig(botcfg: BotCfg) {
+    if (!botcfg.token) {
+        throw new Error('You need to specify the token!');
+    }
+}
+
+validateConfig(cfg);
+
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
-const fs = require('fs');
-
-
-client.commands = new Collection();
-const commandFiles = fs.readdirSync('./commands/').filter(x => x.endsWith('.js'))
-commandFiles.forEach(file => {
-    const command = require(`./commands/${file}`);
-    client.commands.set(command.name, command);
-});
-
-const prefix = '!';
-
-client.on('messageCreate', async message => {
-    if(!message.content.startsWith(prefix) || message.author.bot) return;
-    const args = message.content.slice(prefix.length).split(/ +/);
-    const command = args.shift().toLocaleLowerCase();
-
-    client.commands.get(command).execute(message, args);
-   
-    
-    
-});
-
 
 
 client.on('ready', () => {
-    console.log(`Logged in as ${client.user.tag}!`);
+    console.log(`I\'m alive! ${client.user?.tag}`);
 });
 
-const token = fs.readFileSync('token');
-client.login(token);
+const commandHandler = new CommandHandler(cfg.prefix);
+
+client.on('messageCreated', (message: Message) => {
+    commandHandler.handleMessage(message);
+});
+
+client.on('error', (e) => {
+    console.error('Discord client error!', e);
+});
+
+client.login(cfg.token);
