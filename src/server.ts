@@ -1,6 +1,6 @@
 import { Client, Intents, DiscordAPIError, Message, Collection } from 'discord.js';
 import { BotCfg, cfg } from './cfg/cfg';
-import { CommandHandler } from './command_handler';
+import  * as cmdHandler from './command_handler';
 
 
 
@@ -19,7 +19,7 @@ client.on('ready', () => {
     console.log(`I\'m alive! ${client.user?.tag}`);
 });
 
-const commandHandler = new CommandHandler(cfg.prefix);
+const commandHandler = new cmdHandler.CommandHandler(cfg.prefix);
 
 client.on('messageCreated', (message: Message) => {
     commandHandler.handleMessage(message);
