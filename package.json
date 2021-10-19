@@ -2,7 +2,7 @@
   "name": "droobee",
   "version": "1.0.0",
   "description": "Music bot for Discord",
-  "main": "./build/main.js",
+  "main": "./build/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "c": "node ./node_modules/.bin/tsc"
