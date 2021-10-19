@@ -1,8 +1,13 @@
 import { Client, Intents, DiscordAPIError, Message, Collection } from 'discord.js';
 import { BotCfg, cfg } from './cfg/cfg';
-import  * as cmdHandler from './command_handler';
+import {CommandHandler} from './command_handler';
 
-
+// https://github.com/discordjs/voice
+// https://github.com/discordjs/voice/tree/main/examples
+// https://discordjs.github.io/voice/modules.html#joinvoicechannel
+// https://discordjs.github.io/voice/interfaces/joinvoicechanneloptions.html
+// https://discordjs.github.io/voice/interfaces/createvoiceconnectionoptions.html
+// https://discordjs.github.io/voice/modules.html#discordgatewayadaptercreator
 
 function validateConfig(botcfg: BotCfg) {
     if (!botcfg.token) {
@@ -19,7 +24,7 @@ client.on('ready', () => {
     console.log(`I\'m alive! ${client.user?.tag}`);
 });
 
-const commandHandler = new cmdHandler.CommandHandler(cfg.prefix);
+const commandHandler = new CommandHandler(cfg.prefix);
 
 client.on('messageCreated', (message: Message) => {
     commandHandler.handleMessage(message);

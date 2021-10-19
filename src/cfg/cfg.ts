@@ -8,7 +8,7 @@ export type BotCfg = {
 }
 
 export const cfg: BotCfg = {
-    token: fs.readFileSync('../../token').toString(),
+    token: fs.readFileSync('token').toString(),
     prefix: '!',
     botOwnerRole: 'someRole',
     enableReactions: true

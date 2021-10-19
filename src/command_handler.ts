@@ -9,9 +9,7 @@ import { reactor } from './reactions/reactor';
 export class CommandHandler {
     private commands: Command[];
   
-    private readonly prefix: string;
-  
-    constructor(prefix: string) {
+    constructor(private readonly prefix: string) {
       const commandClasses = [
         // TODO: Add more commands here.
         GreetCommand,
@@ -19,7 +17,6 @@ export class CommandHandler {
   
       this.commands = commandClasses.map((CommandClass) => new CommandClass());
       this.commands.push(new HelpCommand(this.commands));
-      this.prefix = prefix;
     }
   
     /** Executes user commands contained in a message if appropriate. */
