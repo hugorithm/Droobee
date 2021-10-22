@@ -1,7 +1,7 @@
 import { CommandContext } from '../models/command_context';
 import { Command } from './command';
 
-export class PingCommand implements Command {
+export class Ping implements Command {
     commandNames = ['ping'];
 
     getHelpMessage(commandPrefix: string): string {

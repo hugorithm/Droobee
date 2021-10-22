@@ -11,5 +11,5 @@ export const cfg: BotCfg = {
     token: fs.readFileSync('token').toString(),
     prefix: '!',
     botOwnerRole: 'someRole',
-    enableReactions: true
+    enableReactions: false
 };

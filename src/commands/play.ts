@@ -2,11 +2,21 @@ import { CommandContext } from '../models/command_context';
 import { Command } from './command';
 import ytdl from 'ytdl-core';
 import ytSearch from 'yt-search';
-import { createAudioPlayer, DiscordGatewayAdapterCreator, DiscordGatewayAdapterLibraryMethods, joinVoiceChannel } from '@discordjs/voice'; 
-import { Snowflake, StageChannel, VoiceChannel } from 'discord.js';
+import { 
+        AudioPlayerStatus, 
+        createAudioPlayer,
+        createAudioResource,
+        DiscordGatewayAdapterCreator,
+        DiscordGatewayAdapterLibraryMethods,
+        entersState,
+        joinVoiceChannel,
+        StreamType, 
+        VoiceConnectionStatus
+} from '@discordjs/voice'; 
+import { Message, Snowflake, StageChannel, VoiceChannel } from 'discord.js';
 import {createDiscordJSAdapter} from '../adapters/adapter';
  
-export class PlayCommand implements Command {
+export class Play implements Command {
     commandNames = ['play'];
 
     getHelpMessage(commandPrefix: string): string {
@@ -31,33 +41,59 @@ export class PlayCommand implements Command {
             return;
         } 
 
-        if(voiceChannel.type == "GUILD_STAGE_VOICE") return;
-        const connection = joinVoiceChannel({
-            channelId: voiceChannel.id,
-            guildId: voiceChannel.guild.id,
-            adapterCreator: createDiscordJSAdapter(voiceChannel),
-        });
-        
-
-        const player = createAudioPlayer();
-
-        
-        const fVideo = async (query: string) => {
-            const res = await ytSearch(query);
-            return (res.videos.length >= 1) ? res.videos[0] : null;
+        try {
+            await playSong();
+            console.log('Song is ready to play!');
+        } catch (error) {
+            /*
+                The song isn't ready to play for some reason :(
+            */
+            console.error(error);
         }
 
-        const video = await fVideo(args.join(' '));
-        // if(video){
-        //     const stream = ytdl(video.url, {filter: 'audioonly'});
-        //     connection.play(stream, {seek: 0, volume: 1}).on('finish', () => {
-        //         voiceChannel!.leave();
-        //     });
-        //     await parsedUserCommand.originalMessage.reply(`Now Playing ***${video.title}***`);
 
-        // } else{
-        //     parsedUserCommand.originalMessage.channel.send('No results were found!');
-        // }
+        const player = createAudioPlayer();
+        await playSong();
+        function playSong() {
+            
+            const resource = createAudioResource('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', {
+                inputType: StreamType.Arbitrary,
+            });
+
+            player.play(resource);
+           
+            return entersState(player, AudioPlayerStatus.Playing, 5e3);
+        }
+
+        async function connectToChannel(channel: VoiceChannel) {
+           
+            const connection = joinVoiceChannel({
+                channelId: channel.id,
+                guildId: channel.guild.id,
+                adapterCreator: createDiscordJSAdapter(channel),
+            });
+
+            try {
+               
+                await entersState(connection, VoiceConnectionStatus.Ready, 30e3);
+               
+                return connection;
+            } catch (error) {
+               
+                connection.destroy();
+                throw error;
+            }
+        }
+
+
+        try{
+            const connection = await connectToChannel(voiceChannel as VoiceChannel);
+            connection.subscribe(player);
+            await parsedUserCommand.originalMessage.reply('Playing now!')
+
+        } catch(err){
+            console.log(err);
+        }
 
     }
 

@@ -17,7 +17,7 @@ function validateConfig(botcfg: BotCfg) {
 
 validateConfig(cfg);
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES] });
 
 
 client.on('ready', () => {
@@ -26,7 +26,12 @@ client.on('ready', () => {
 
 const commandHandler = new CommandHandler(cfg.prefix);
 
+client.on('debug', message => {
+    console.log(message);
+});
+
 client.on('messageCreated', (message: Message) => {
+    console.log(message);
     commandHandler.handleMessage(message);
 });
 
