@@ -26,11 +26,7 @@ client.on('ready', () => {
 
 const commandHandler = new CommandHandler(cfg.prefix);
 
-client.on('debug', message => {
-    console.log(message);
-});
-
-client.on('messageCreated', (message: Message) => {
+client.on('messageCreate', (message: Message) => {
     console.log(message);
     commandHandler.handleMessage(message);
 });
