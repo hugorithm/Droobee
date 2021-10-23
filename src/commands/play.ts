@@ -1,11 +1,13 @@
 import { CommandContext } from '../models/command_context';
 import { Command } from './command';
-import ytdl from 'ytdl-core';
 import ytSearch from 'yt-search';
+import { raw as ytdl } from 'youtube-dl-exec';
 import { 
         AudioPlayerStatus, 
+        AudioResource, 
         createAudioPlayer,
         createAudioResource,
+        demuxProbe,
         DiscordGatewayAdapterCreator,
         DiscordGatewayAdapterLibraryMethods,
         entersState,
@@ -64,7 +66,7 @@ export class Play implements Command {
 
 
         async function playSong() {
-            const resource = createAudioResource('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', {
+            const resource = createAudioResource('https://www.youtube.com/watch?v=IL0dxX_z2qc', {
                 inputType: StreamType.Arbitrary,
             });
             player.play(resource);
@@ -88,8 +90,40 @@ export class Play implements Command {
                 throw error;
             }
         }
-    }
 
+        // function createYtdlResource(url: string): Promise<AudioResource<Track>> {
+        //     return new Promise((resolve, reject) => {
+        //         const process = ytdl(
+        //             url,
+        //             {
+        //                 o: '-',
+        //                 q: '',
+        //                 f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
+        //                 r: '100K',
+        //             },
+        //             { stdio: ['ignore', 'pipe', 'ignore'] },
+        //         );
+        //         if (!process.stdout) {
+        //             reject(new Error('No stdout'));
+        //             return;
+        //         }
+        //         const stream = process.stdout;
+        //         const onError = (error: Error) => {
+        //             if (!process.killed) process.kill();
+        //             stream.resume();
+        //             reject(error);
+        //         };
+        //         process
+        //             .once('spawn', () => {
+        //                 demuxProbe(stream)
+        //                     .then((probe) => resolve(createAudioResource(probe.stream, { metadata: this, inputType: probe.type })))
+        //                     .catch(onError);
+        //             })
+        //             .catch(onError);
+        //     });
+        // }
+    }
+    
     hasPermissionToRun(parsedUserCommand: CommandContext): boolean {
         return true;
     }
