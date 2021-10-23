@@ -1,7 +1,7 @@
 import { CommandContext } from '../models/command_context';
 import { Command } from './command';
 
-export class GreetCommand implements Command {
+export class Greet implements Command {
     commandNames = ['greet', 'hello'];
 
     getHelpMessage(commandPrefix: string): string {

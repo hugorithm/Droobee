@@ -27,7 +27,6 @@ client.on('ready', () => {
 const commandHandler = new CommandHandler(cfg.prefix);
 
 client.on('messageCreate', (message: Message) => {
-    console.log(message);
     commandHandler.handleMessage(message);
 });
 
