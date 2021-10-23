@@ -1,76 +1,81 @@
 import { CommandContext } from '../models/command_context';
 import { Command } from './command';
-import ytSearch from 'yt-search';
-import { raw as ytdl } from 'youtube-dl-exec';
-import { 
-        AudioPlayerStatus, 
-        AudioResource, 
-        createAudioPlayer,
-        createAudioResource,
-        demuxProbe,
-        DiscordGatewayAdapterCreator,
-        DiscordGatewayAdapterLibraryMethods,
-        entersState,
-        joinVoiceChannel,
-        StreamType, 
-        VoiceConnectionStatus
-} from '@discordjs/voice'; 
-import { Message, Snowflake, StageChannel, VoiceChannel } from 'discord.js';
-import {createDiscordJSAdapter} from '../adapters/adapter';
- 
+import {
+    entersState,
+    joinVoiceChannel,
+    VoiceConnectionStatus
+} from '@discordjs/voice';
+import { Snowflake, VoiceChannel } from 'discord.js';
+import { createDiscordJSAdapter } from '../adapters/adapter';
+import { Track } from '../music/track.js';
+import { MusicSubscription } from '../music/subscription';
+
 export class Play implements Command {
+    subscriptions = new Map<Snowflake, MusicSubscription>();
+
     commandNames = ['play', 'p'];
 
     getHelpMessage(commandPrefix: string): string {
-        return `Use ${commandPrefix}play to play a song!.`;
+        return `Use ${commandPrefix}play to play a song!`;
     }
 
     async run(parsedUserCommand: CommandContext): Promise<void> {
-        const member = parsedUserCommand.originalMessage.member;
-        if(!member) {
+        const subscriptions = new Map<Snowflake, MusicSubscription>();          //This is wrong, gotta change it later
+
+        const member = parsedUserCommand.originalMessage.member;                //Check if it is DM
+        if (!member) {
             await parsedUserCommand.originalMessage.channel.send(`This command doesn't work in DM's`);
             return;
         }
 
-        const voiceChannel = member.voice?.channel;
-        if(!voiceChannel) {
+        const voiceChannel = member.voice?.channel;                             //Check if user is in voice channel
+        if (!voiceChannel) {
             await parsedUserCommand.originalMessage.channel.send(`You need to be in a channel to use this command ${parsedUserCommand.originalMessage.author}`);
             return;
         }
-       
-        const args = parsedUserCommand.args;
-        if(!args.length){
+
+        const args = parsedUserCommand.args;                                    //Check for null arguments
+        if (!args.length) {
             await parsedUserCommand.originalMessage.channel.send(`Syntax: !play <link or search query> ${parsedUserCommand.originalMessage.author}`);
+            return;
+        }
+
+        const expr =  /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
+        const regex = new RegExp(expr);
+        if(!args[0].match(regex)){
+            await parsedUserCommand.originalMessage.reply('You must provide a link until I figure my shit');
             return;
         } 
 
 
-        const player = createAudioPlayer();
         try {
-            const test = await playSong();
-    
-            console.log('Song is ready to play!');
-        } catch (error) {
-            console.error(error);
-        }
-
-        try{
-           
             const connection = await connectToChannel(voiceChannel as VoiceChannel);
-            const test2 = connection.subscribe(player);
-            await parsedUserCommand.originalMessage.reply('Playing now!');
-
-        } catch(err){
+            await playSong();
+        } catch (err) {
             console.log(err);
         }
 
-
         async function playSong() {
-            const resource = createAudioResource('https://www.youtube.com/watch?v=IL0dxX_z2qc', {
-                inputType: StreamType.Arbitrary,
-            });
-            player.play(resource);
-            return await entersState(player, AudioPlayerStatus.Playing, 5e3);
+            try {
+                const track = Track.from(args[0], {
+                    async onStart() {
+                        await parsedUserCommand.originalMessage.reply(`Now Playing: **${(await track).title}**`);
+                    },
+                    async onFinish() {
+                        await parsedUserCommand.originalMessage.channel.send('Now Finished!');
+                    },
+                    async onError(error) {
+                        console.warn(error);
+                        await parsedUserCommand.originalMessage.channel.send('There was an unespected error!');
+                    },
+                });
+
+                let subscription = subscriptions.get(parsedUserCommand.originalMessage.guildId!);
+                if (!subscription) return await parsedUserCommand.originalMessage.reply('There is no subsciption for this server!');
+                subscription.enqueue(await track);
+            } catch (err) {
+                throw err;
+            }
         }
 
         async function connectToChannel(channel: VoiceChannel) {
@@ -80,50 +85,20 @@ export class Play implements Command {
                 adapterCreator: createDiscordJSAdapter(channel),
             });
 
-         
+            const subscription = new MusicSubscription(connection);
+            subscriptions.set(channel.guild.id, subscription);
+
             try {
                 await entersState(connection, VoiceConnectionStatus.Ready, 30e3);
                 return connection;
             } catch (error) {
-               
                 connection.destroy();
                 throw error;
             }
         }
 
-        // function createYtdlResource(url: string): Promise<AudioResource<Track>> {
-        //     return new Promise((resolve, reject) => {
-        //         const process = ytdl(
-        //             url,
-        //             {
-        //                 o: '-',
-        //                 q: '',
-        //                 f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
-        //                 r: '100K',
-        //             },
-        //             { stdio: ['ignore', 'pipe', 'ignore'] },
-        //         );
-        //         if (!process.stdout) {
-        //             reject(new Error('No stdout'));
-        //             return;
-        //         }
-        //         const stream = process.stdout;
-        //         const onError = (error: Error) => {
-        //             if (!process.killed) process.kill();
-        //             stream.resume();
-        //             reject(error);
-        //         };
-        //         process
-        //             .once('spawn', () => {
-        //                 demuxProbe(stream)
-        //                     .then((probe) => resolve(createAudioResource(probe.stream, { metadata: this, inputType: probe.type })))
-        //                     .catch(onError);
-        //             })
-        //             .catch(onError);
-        //     });
-        // }
     }
-    
+
     hasPermissionToRun(parsedUserCommand: CommandContext): boolean {
         return true;
     }
