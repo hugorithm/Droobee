@@ -11,7 +11,6 @@ import { Track } from '../music/track.js';
 import { MusicSubscription } from '../music/subscription';
 
 export class Play implements Command {
-    subscriptions = new Map<Snowflake, MusicSubscription>();
 
     commandNames = ['play', 'p'];
 
@@ -40,13 +39,12 @@ export class Play implements Command {
             return;
         }
 
-        const expr =  /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
+        const expr = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
         const regex = new RegExp(expr);
-        if(!args[0].match(regex)){
+        if (!args[0].match(regex)) {
             await parsedUserCommand.originalMessage.reply('You must provide a link until I figure my shit');
             return;
-        } 
-
+        }
 
         try {
             const connection = await connectToChannel(voiceChannel as VoiceChannel);
@@ -62,7 +60,7 @@ export class Play implements Command {
                         await parsedUserCommand.originalMessage.reply(`Now Playing: **${(await track).title}**`);
                     },
                     async onFinish() {
-                        await parsedUserCommand.originalMessage.channel.send('Now Finished!');
+                        await parsedUserCommand.originalMessage.channel.send(`Finished playing: **${(await track).title}**`);
                     },
                     async onError(error) {
                         console.warn(error);
