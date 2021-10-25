@@ -3,6 +3,8 @@ import { Command } from './commands/command';
 import { Ping } from './commands/ping';
 import { Greet } from './commands/greet';
 import { Play } from './commands/play';
+import { Stop } from './commands/stop';
+import { Skip } from './commands/skip';
 import { HelpCommand } from './commands/help';
 import { CommandContext } from './models/command_context';
 import { reactor } from './reactions/reactor';
@@ -13,8 +15,10 @@ export class CommandHandler {
     constructor(private readonly prefix: string) {
         const commandClasses = [
             Ping,
+            Greet,
             Play,
-            Greet
+            Skip,
+            Stop
         ];
 
         this.commands = commandClasses.map((CommandClass) => new CommandClass());

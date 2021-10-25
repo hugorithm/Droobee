@@ -9,6 +9,9 @@ import { Snowflake, VoiceChannel } from 'discord.js';
 import { createDiscordJSAdapter } from '../adapters/adapter';
 import { Track } from '../music/track.js';
 import { MusicSubscription } from '../music/subscription';
+import { enqueue, subscribe } from '../music/subscriptions';
+
+const subscriptions = new Map<Snowflake, MusicSubscription>();
 
 export class Play implements Command {
 
@@ -19,8 +22,6 @@ export class Play implements Command {
     }
 
     async run(parsedUserCommand: CommandContext): Promise<void> {
-        const subscriptions = new Map<Snowflake, MusicSubscription>();          //This is wrong, gotta change it later
-
         const member = parsedUserCommand.originalMessage.member;                //Check if it is DM
         if (!member) {
             await parsedUserCommand.originalMessage.channel.send(`This command doesn't work in DM's`);
@@ -54,37 +55,31 @@ export class Play implements Command {
         }
 
         async function playSong() {
-            try {
-                const track = Track.from(args[0], {
-                    async onStart() {
-                        await parsedUserCommand.originalMessage.reply(`Now Playing: **${(await track).title}**`);
-                    },
-                    async onFinish() {
-                        await parsedUserCommand.originalMessage.channel.send(`Finished playing: **${(await track).title}**`);
-                    },
-                    async onError(error) {
-                        console.warn(error);
-                        await parsedUserCommand.originalMessage.channel.send('There was an unespected error!');
-                    },
-                });
+            const track = await Track.from(args[0], {
+                async onStart() {
+                    await parsedUserCommand.originalMessage.reply(`Now Playing: **${track.title}**`);
+                },
+                async onFinish() {
+                    await parsedUserCommand.originalMessage.channel.send(`Finished playing: **${track.title}**`);
+                },
+                async onError(error) {
+                    console.warn(error);
+                    await parsedUserCommand.originalMessage.channel.send('There was an unespected error!');
+                },
+            });
 
-                let subscription = subscriptions.get(parsedUserCommand.originalMessage.guildId!);
-                if (!subscription) return await parsedUserCommand.originalMessage.reply('There is no subsciption for this server!');
-                subscription.enqueue(await track);
-            } catch (err) {
-                throw err;
-            }
+            enqueue(parsedUserCommand.originalMessage.guildId!, track);
+            await parsedUserCommand.originalMessage.channel.send(`**${track.title}** was added to the queue!`);
         }
 
         async function connectToChannel(channel: VoiceChannel) {
             const connection = joinVoiceChannel({
                 channelId: channel.id,
-                guildId: channel.guild.id,
+                guildId: channel.guildId,
                 adapterCreator: createDiscordJSAdapter(channel),
             });
-
-            const subscription = new MusicSubscription(connection);
-            subscriptions.set(channel.guild.id, subscription);
+            
+            subscribe(connection, channel.guildId);
 
             try {
                 await entersState(connection, VoiceConnectionStatus.Ready, 30e3);

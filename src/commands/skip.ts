@@ -1,14 +1,14 @@
 import { CommandContext } from '../models/command_context';
 import { Command } from './command';
-import { stop } from '../music/subscriptions';
+import { skip } from '../music/subscriptions';
 
 
-export class Stop implements Command {
+export class Skip implements Command {
 
-    commandNames = ['stop'];
+    commandNames = ['skip', 's'];
 
     getHelpMessage(commandPrefix: string): string {
-        return `Use ${commandPrefix}stop to stop!`;
+        return `Use ${commandPrefix}skip to skip the current song!`;
     }
 
     async run(parsedUserCommand: CommandContext): Promise<void> {
@@ -30,9 +30,11 @@ export class Stop implements Command {
             return;
         }
 
-        stop(voiceChannel.guildId);
+        skip(voiceChannel.guildId);
+
     }
 
+    
     hasPermissionToRun(parsedUserCommand: CommandContext): boolean {
         return true;
     }
