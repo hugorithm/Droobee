@@ -8,7 +8,7 @@ const subscriptions = new Map<Snowflake, MusicSubscription>();
 export function enqueue(sn: Snowflake, track: Track): void {
     const sub = subscriptions.get(sn);
     if (!sub) {
-        throw Error("There should be a subscription here!");
+        throw new Error("There should be a subscription here!");
     } else {
         sub.enqueue(track);
     }
@@ -25,7 +25,7 @@ export function subscribe(connection: VoiceConnection, guildId: Snowflake): void
 export function skip(sn: Snowflake): void {
     const sub = subscriptions.get(sn);
     if (!sub) {
-        throw Error("There should be a subscription here!");
+        throw new Error("There should be a subscription here!");
     } else {
         sub.audioPlayer.stop();
        
@@ -35,7 +35,7 @@ export function skip(sn: Snowflake): void {
 export function stop(sn: Snowflake): void {         //Pass existing connection here
     const sub = subscriptions.get(sn);
     if (!sub) {
-        throw Error("There should be a subscription here!");
+        throw new Error("There should be a subscription here!");
     } else {
         sub.stop();
         // connection.destroy();
