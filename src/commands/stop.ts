@@ -1,6 +1,6 @@
 import { CommandContext } from '../models/command_context';
 import { Command } from './command';
-import { stop } from '../music/subscriptions';
+import { stop } from '../music/subscription_controller';
 
 
 export class Stop implements Command {

@@ -9,7 +9,7 @@ import { Snowflake, VoiceChannel } from 'discord.js';
 import { createDiscordJSAdapter } from '../adapters/adapter';
 import { Track } from '../music/track.js';
 import { MusicSubscription } from '../music/subscription';
-import { enqueue, subscribe } from '../music/subscriptions';
+import { enqueue, subscribe } from '../music/subscription_controller';
 
 const subscriptions = new Map<Snowflake, MusicSubscription>();
 
