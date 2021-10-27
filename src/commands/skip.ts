@@ -1,6 +1,6 @@
 import { CommandContext } from '../models/command_context';
 import { Command } from './command';
-import { skip } from '../music/subscription_controller';
+import { skip } from '../music/music_controller';
 
 
 export class Skip implements Command {
