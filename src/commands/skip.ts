@@ -5,7 +5,7 @@ import { skip } from '../music/subscription_controller';
 
 export class Skip implements Command {
 
-    commandNames = ['skip', 's'];
+    commandNames = ['skip', 's', 'sikp'];
 
     getHelpMessage(commandPrefix: string): string {
         return `Use ${commandPrefix}skip to skip the current song!`;

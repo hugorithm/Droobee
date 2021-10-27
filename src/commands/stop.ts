@@ -5,7 +5,7 @@ import { stop } from '../music/subscription_controller';
 
 export class Stop implements Command {
 
-    commandNames = ['stop'];
+    commandNames = ['stop', 'halt', 'sotp'];
 
     getHelpMessage(commandPrefix: string): string {
         return `Use ${commandPrefix}stop to stop!`;
@@ -29,7 +29,7 @@ export class Stop implements Command {
             await parsedUserCommand.originalMessage.channel.send(`Syntax: !skip ${parsedUserCommand.originalMessage.author}`);
             return;
         }
-
+        
         stop(voiceChannel.guildId);
     }
 
