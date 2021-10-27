@@ -20,9 +20,7 @@ export class HelpCommand implements Command {
                 (command) => command.commandNames[0],
             );
             await commandContext.originalMessage.reply(
-                `here is a list of commands you can run: ${commandNames.join(
-                    ', ',
-                )}. Try !help ${commandNames[0]} to learn more about one of them.`
+                `here is a list of commands you can run: \`\`\`${commandNames.join('\n -')}\`\`\`. Try !help ${commandNames[0]} to learn more about one of them.`
             );
             return;
         }

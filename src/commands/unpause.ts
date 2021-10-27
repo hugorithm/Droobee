@@ -1,14 +1,14 @@
 import { CommandContext } from '../models/command_context';
 import { Command } from './command';
-import { stop } from '../music/music_controller';
+import { unpause } from '../music/music_controller';
 
 
-export class Stop implements Command {
+export class Unpause implements Command {
 
-    commandNames = ['stop', 'halt', 'sotp'];
+    commandNames = ['unpause'];
 
     getHelpMessage(commandPrefix: string): string {
-        return `Use ${commandPrefix}stop to stop!`;
+        return `Use ${commandPrefix}unpause to unpause the current song!`;
     }
 
     async run(parsedUserCommand: CommandContext): Promise<void> {
@@ -26,13 +26,15 @@ export class Stop implements Command {
 
         const args = parsedUserCommand.args;                                    //Check for null arguments
         if (args.length !== 0) {
-            await parsedUserCommand.originalMessage.channel.send(`Syntax: !stop ${parsedUserCommand.originalMessage.author}`);
+            await parsedUserCommand.originalMessage.channel.send(`Syntax: !unpause ${parsedUserCommand.originalMessage.author}`);
             return;
         }
-        
-        stop(voiceChannel.guildId);
+
+        unpause(voiceChannel.guildId);
+
     }
 
+    
     hasPermissionToRun(parsedUserCommand: CommandContext): boolean {
         return true;
     }

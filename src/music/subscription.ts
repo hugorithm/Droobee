@@ -145,4 +145,8 @@ export class MusicSubscription {
 			return this.processQueue();
 		}
 	}
+
+	public getQueue(): Track[]{
+		return this.queue;
+	}
 }

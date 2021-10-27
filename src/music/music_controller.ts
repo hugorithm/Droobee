@@ -6,7 +6,7 @@ import { MusicSubscription } from "./subscription";
 import { Track } from "./track";
 
 const subscriptions = new Map<Snowflake, MusicSubscription>();
-const connections = new Map<Snowflake, VoiceConnection>();
+
 
 export function enqueue(sn: Snowflake, track: Track): void {
     const sub = subscriptions.get(sn);
@@ -31,7 +31,7 @@ export function skip(sn: Snowflake): void {
         throw new Error("There should be a subscription here!");
     } else {
         sub.audioPlayer.stop();
-       
+
     }
 }
 
@@ -41,13 +41,35 @@ export function stop(sn: Snowflake): void {         //Pass existing connection h
         throw new Error("There should be a subscription here!");
     } else {
         sub.stop();
-        const connection = connections.get(sn);
-        if(connection){
-            connection.destroy();
-            connections.delete(sn);
-        }
+        sub.voiceConnection.destroy();
+        subscriptions.delete(sn);
+    }
+}
 
-        
+export function pause(sn: Snowflake): void {
+    const sub = subscriptions.get(sn);
+    if (!sub) {
+        throw new Error("There should be a subscription here!");
+    } else {
+        sub.audioPlayer.pause();
+    }
+}
+
+export function unpause(sn: Snowflake): void {
+    const sub = subscriptions.get(sn);
+    if (!sub) {
+        throw new Error("There should be a subscription here!");
+    } else {
+        sub.audioPlayer.unpause();
+    }
+}
+
+export function getQueue(sn: Snowflake): Track[] {
+    const sub = subscriptions.get(sn);
+    if (!sub) {
+        throw new Error("There should be a subscription here!");
+    } else {
+        return sub.getQueue();
     }
 }
 
@@ -58,7 +80,6 @@ export async function connectToChannel(channel: VoiceChannel) {
         adapterCreator: createDiscordJSAdapter(channel),
     });
 
-    connections.set(channel.guildId, connection);
     subscribe(connection, channel.guildId);
 
     try {
@@ -85,6 +106,6 @@ export async function playSong(parsedUserCommand: CommandContext, args: string[]
     });
 
     enqueue(parsedUserCommand.originalMessage.guildId!, track);
-    await parsedUserCommand.originalMessage.channel.send(`**${track.title}** was added to the queue!`);
+    await parsedUserCommand.originalMessage.channel.send(`**${track.title}** was added to the playlist!`);
 }
 

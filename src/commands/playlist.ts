@@ -1,14 +1,14 @@
 import { CommandContext } from '../models/command_context';
 import { Command } from './command';
-import { stop } from '../music/music_controller';
+import { getQueue } from '../music/music_controller';
 
 
-export class Stop implements Command {
+export class Playlist implements Command {
 
-    commandNames = ['stop', 'halt', 'sotp'];
+    commandNames = ['playlist', 'pl', 'queue'];
 
     getHelpMessage(commandPrefix: string): string {
-        return `Use ${commandPrefix}stop to stop!`;
+        return `Use ${commandPrefix}skip to skip the current song!`;
     }
 
     async run(parsedUserCommand: CommandContext): Promise<void> {
@@ -26,13 +26,22 @@ export class Stop implements Command {
 
         const args = parsedUserCommand.args;                                    //Check for null arguments
         if (args.length !== 0) {
-            await parsedUserCommand.originalMessage.channel.send(`Syntax: !stop ${parsedUserCommand.originalMessage.author}`);
+            await parsedUserCommand.originalMessage.channel.send(`Syntax: !skip ${parsedUserCommand.originalMessage.author}`);
             return;
         }
-        
-        stop(voiceChannel.guildId);
+
+        const pl = getQueue(voiceChannel.guildId);
+        let stitle = "";
+        pl.forEach(x => {
+            stitle = stitle.concat(x.title, " | ".concat(x.url) , "\n");
+        });
+        if(!(pl.length > 0)) return;
+        await parsedUserCommand.originalMessage.channel.send(`\`\`\`${stitle}\`\`\``);
+
+
     }
 
+    
     hasPermissionToRun(parsedUserCommand: CommandContext): boolean {
         return true;
     }

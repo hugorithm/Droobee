@@ -8,6 +8,9 @@ import { Skip } from './commands/skip';
 import { HelpCommand } from './commands/help';
 import { CommandContext } from './models/command_context';
 import { reactor } from './reactions/reactor';
+import { Pause } from './commands/pause';
+import { Unpause } from './commands/unpause';
+import { Playlist } from './commands/playlist';
 
 export class CommandHandler {
     private commands: Command[];
@@ -18,7 +21,10 @@ export class CommandHandler {
             Greet,
             Play,
             Skip,
-            Stop
+            Stop,
+            Pause,
+            Unpause,
+            Playlist
         ];
 
         this.commands = commandClasses.map((CommandClass) => new CommandClass());
