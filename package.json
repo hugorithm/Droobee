@@ -1,6 +1,9 @@
 {
   "name": "droobee",
   "version": "1.0.0",
+  "engines": {
+    "node": "16.x"
+  },
   "description": "Music bot for Discord",
   "main": "./build/main.js",
   "scripts": {
