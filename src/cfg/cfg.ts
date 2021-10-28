@@ -8,8 +8,20 @@ export type BotCfg = {
 }
 
 export const cfg: BotCfg = {
-    token: fs.readFileSync('token').toString(),
+    token: loadToken(),
     prefix: '!',
     botOwnerRole: 'someRole',
     enableReactions: false
 };
+
+function loadToken(): string{
+    try{
+        return fs.readFileSync('token').toString();
+    }catch{
+        if(process.env.TOKEN){
+            return process.env.TOKEN;
+        } else {
+            throw new Error("Token not found!");
+        }
+    }
+}
