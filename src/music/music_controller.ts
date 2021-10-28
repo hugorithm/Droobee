@@ -94,7 +94,7 @@ export async function connectToChannel(channel: VoiceChannel) {
 export async function playSong(parsedUserCommand: CommandContext, arg: string) {
     const track = await Track.from(arg, {
         async onStart() {
-            await parsedUserCommand.originalMessage.reply(`Now Playing: **${track.title}**`);
+            await parsedUserCommand.originalMessage.channel.send(`Now Playing: **${track.title}**`);
         },
         async onFinish() {
             await parsedUserCommand.originalMessage.channel.send(`Finished playing: **${track.title}**`);
