@@ -3,6 +3,7 @@ import { Command } from './command';
 import { Snowflake, VoiceChannel } from 'discord.js';
 import { MusicSubscription } from '../music/subscription';
 import { connectToChannel, playSong } from '../music/music_controller';
+import {search} from 'yt-search';
 
 const subscriptions = new Map<Snowflake, MusicSubscription>();
 
@@ -35,14 +36,16 @@ export class Play implements Command {
 
         const expr = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
         const regex = new RegExp(expr);
-        if (!args[0].match(regex)) {
-            await parsedUserCommand.originalMessage.reply('You must provide a link until I figure my shit');
-            return;
-        }
+        let arg = args[0];
+        if (!arg.match(regex)) {
+            const res = await search(args.join(" ")); 
+            const url = res.videos[0].url; 
+            arg = url;  
+        } 
 
         try {
             const connection = await connectToChannel(voiceChannel as VoiceChannel);
-            await playSong(parsedUserCommand, args);
+            await playSong(parsedUserCommand, arg);
         } catch (err) {
             console.log(err);
         }

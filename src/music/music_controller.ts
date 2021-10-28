@@ -91,8 +91,8 @@ export async function connectToChannel(channel: VoiceChannel) {
     }
 }
 
-export async function playSong(parsedUserCommand: CommandContext, args: string[]) {
-    const track = await Track.from(args[0], {
+export async function playSong(parsedUserCommand: CommandContext, arg: string) {
+    const track = await Track.from(arg, {
         async onStart() {
             await parsedUserCommand.originalMessage.reply(`Now Playing: **${track.title}**`);
         },

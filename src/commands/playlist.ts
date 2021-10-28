@@ -5,7 +5,7 @@ import { getQueue } from '../music/music_controller';
 
 export class Playlist implements Command {
 
-    commandNames = ['playlist', 'pl', 'queue'];
+    commandNames = ['playlist', 'pl', 'queue', 'q'];
 
     getHelpMessage(commandPrefix: string): string {
         return `Use ${commandPrefix}skip to skip the current song!`;
