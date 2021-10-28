@@ -5,7 +5,7 @@ import { unpause } from '../music/music_controller';
 
 export class Unpause implements Command {
 
-    commandNames = ['unpause'];
+    commandNames = ['unpause', 'resume'];
 
     getHelpMessage(commandPrefix: string): string {
         return `Use ${commandPrefix}unpause to unpause the current song!`;

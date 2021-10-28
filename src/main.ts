@@ -7,6 +7,7 @@ function validateConfig(botcfg: BotCfg) {
         throw new Error('You need to specify the token!');
     }
 }
+// https://github.com/discordjs/voice/blob/main/examples/music-bot/src/bot.ts
 
 validateConfig(cfg);
 
