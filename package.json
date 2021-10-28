@@ -5,7 +5,9 @@
   "main": "./build/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "go": "npx tsc && node ."
+    "go": "npx tsc && node .",
+    "start": "npx tsc && node ."
+
   },
   "repository": {
     "type": "git",
