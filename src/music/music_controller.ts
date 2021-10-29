@@ -31,7 +31,6 @@ export function skip(sn: Snowflake): void {
         throw new Error("There should be a subscription here!");
     } else {
         sub.audioPlayer.stop();
-
     }
 }
 
@@ -104,8 +103,13 @@ export async function playSong(parsedUserCommand: CommandContext, arg: string) {
             await parsedUserCommand.originalMessage.channel.send('There was an unespected error!');
         },
     });
+    try {
+        enqueue(parsedUserCommand.originalMessage.guildId!, track);
+        await parsedUserCommand.originalMessage.channel.send(`**${track.title}** was added to the playlist!`);
+    } catch (err) {
+        await parsedUserCommand.originalMessage.channel.send(`**${track.title}** failed to enqueue! The video has age restrictions/is private or was removed`);
+        throw err;
+    }
 
-    enqueue(parsedUserCommand.originalMessage.guildId!, track);
-    await parsedUserCommand.originalMessage.channel.send(`**${track.title}** was added to the playlist!`);
 }
 
