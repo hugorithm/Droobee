@@ -30,7 +30,6 @@ export class MusicSubscription {
 		this.voiceConnection = voiceConnection;
 		this.audioPlayer = createAudioPlayer();
 		this.queue = [];
-		this.timeout;
 
 		this.voiceConnection.on('stateChange', async (_, newState) => {
 			if (newState.status === VoiceConnectionStatus.Disconnected) {
@@ -99,9 +98,10 @@ export class MusicSubscription {
 				this.timeout = setTimeout(() => { 
 					this.stop();
 					(oldState.resource as AudioResource<Track>).metadata.onLeave();
-					this.voiceConnection.disconnect(); 
 					subscriptions.delete(this.voiceConnection.joinConfig.guildId);
+					this.voiceConnection.disconnect();
 				}, 3e5); 
+
 
 			} else if (newState.status === AudioPlayerStatus.Playing) {
 				// If the Playing state has been entered, then a new track has started playback.
@@ -133,22 +133,6 @@ export class MusicSubscription {
 		this.queue = [];
 		this.audioPlayer.stop(true);
 	}
-
-	// /**
-	//  *  Checks if the queue is empty and leaves the channel in 5 minutes if true
-	//  */
-	// private checkEmptyQueue(timeout: NodeJS.Timeout | undefined): NodeJS.Timeout | undefined {
-	// 	if (this.queue.length === 0) {
-	// 		if(!timeout){
-	// 			timeout = setTimeout(() => { 
-	// 				this.stop();
-	// 				this.voiceConnection.destroy(); 
-	// 				subscriptions.delete(this.voiceConnection.joinConfig.guildId);
-	// 			}, 10000); 
-	// 		}
-	// 	}
-	// 	return timeout;
-	// }
 
 	/**
 	 * Attempts to play a Track from the queue

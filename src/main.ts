@@ -1,6 +1,7 @@
-import { Client, Intents, Message } from 'discord.js';
+import { Client, Intents, Message, VoiceState } from 'discord.js';
 import { BotCfg, cfg } from './cfg/cfg';
 import {CommandHandler} from './command_handler';
+import { disconnect } from './music/music_controller'
 
 function validateConfig(botcfg: BotCfg) {
     if (!botcfg.token) {
@@ -21,6 +22,12 @@ const commandHandler = new CommandHandler(cfg.prefix);
 
 client.on('messageCreate', (message: Message) => {
     commandHandler.handleMessage(message);
+});
+
+client.on('voiceStateUpdate', (oldstate, newState) => {
+    if(oldstate.channel?.members.size === 1){
+       disconnect(oldstate.guild.id);
+    }
 });
 
 client.on('error', (e) => {

@@ -72,7 +72,7 @@ export function getQueue(sn: Snowflake): Track[] {
     }
 }
 
-export async function connectToChannel(channel: VoiceChannel) {
+export async function connectToChannel(channel: VoiceChannel): Promise<VoiceConnection> {
     const connection = joinVoiceChannel({
         channelId: channel.id,
         guildId: channel.guildId,
@@ -90,6 +90,14 @@ export async function connectToChannel(channel: VoiceChannel) {
     }
 }
 
+export function disconnect(guildId: Snowflake): void {
+    const sub = subscriptions.get(guildId);
+    if (sub){
+        subscriptions.delete(guildId);
+        sub.voiceConnection.destroy();
+    } 
+}
+
 export async function playSong(parsedUserCommand: CommandContext, arg: string) {
     const track = await Track.from(arg, {
         async onStart() {
@@ -99,7 +107,7 @@ export async function playSong(parsedUserCommand: CommandContext, arg: string) {
             await parsedUserCommand.originalMessage.channel.send(`Finished playing: **${track.title}**`);
         },
         async onLeave() {
-            await parsedUserCommand.originalMessage.channel.send(`Bye! 👋`);
+            await parsedUserCommand.originalMessage.channel.send('Bye! 👋');
         },
         async onError(error) {
             console.warn(error);
