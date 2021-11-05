@@ -100,7 +100,7 @@ export class MusicSubscription {
 					this.stop();
 					this.voiceConnection.disconnect(); 
 					subscriptions.delete(this.voiceConnection.joinConfig.guildId);
-				}, 1.8e6); 
+				}, 3e5); 
 
 			} else if (newState.status === AudioPlayerStatus.Playing) {
 				// If the Playing state has been entered, then a new track has started playback.
