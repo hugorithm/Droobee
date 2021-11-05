@@ -5,7 +5,7 @@ import { CommandContext } from "../models/command_context";
 import { MusicSubscription } from "./subscription";
 import { Track } from "./track";
 
-const subscriptions = new Map<Snowflake, MusicSubscription>();
+export const subscriptions = new Map<Snowflake, MusicSubscription>();
 
 
 export function enqueue(sn: Snowflake, track: Track): void {

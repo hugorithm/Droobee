@@ -10,6 +10,7 @@ import {
 } from '@discordjs/voice';
 import { Track } from './track';
 import { promisify } from 'util';
+import { subscriptions } from './music_controller'
 
 const wait = promisify(setTimeout);
 
@@ -85,14 +86,18 @@ export class MusicSubscription {
 
 		// Configure audio player
 		this.audioPlayer.on('stateChange', (oldState, newState) => {
+			let timeout;
 			if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
 				// If the Idle state is entered from a non-Idle state, it means that an audio resource has finished playing.
 				// The queue is then processed to start playing the next track, if one is available.
 				(oldState.resource as AudioResource<Track>).metadata.onFinish();
 				void this.processQueue();
+				
+				void this.checkEmptyQueue(timeout);
 			} else if (newState.status === AudioPlayerStatus.Playing) {
 				// If the Playing state has been entered, then a new track has started playback.
 				(newState.resource as AudioResource<Track>).metadata.onStart();
+				void this.checkEmptyQueue(timeout);
 			}
 		});
 
@@ -121,6 +126,21 @@ export class MusicSubscription {
 	}
 
 	/**
+	 *  Checks if the queue is empty and leaves the channel in 1 minute if true
+	 */
+	private checkEmptyQueue(timeout: NodeJS.Timeout | undefined): void {
+		if (this.queue.length === 0) {
+			timeout = setTimeout(() => { 
+				this.stop();
+				subscriptions.delete(this.voiceConnection.joinConfig.guildId);
+				this.voiceConnection.destroy(); 
+			}, 60000); 
+		} else {
+			if (timeout) clearTimeout(timeout);
+		}
+	}
+
+	/**
 	 * Attempts to play a Track from the queue
 	 */
 	private async processQueue(): Promise<void> {
@@ -146,7 +166,7 @@ export class MusicSubscription {
 		}
 	}
 
-	public getQueue(): Track[]{
+	public getQueue(): Track[] {
 		return this.queue;
 	}
 }
