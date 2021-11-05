@@ -98,7 +98,7 @@ export class MusicSubscription {
 				if(this.timeout) clearTimeout(this.timeout);
 				this.timeout = setTimeout(() => { 
 					this.stop();
-					this.voiceConnection.destroy(); 
+					this.voiceConnection.disconnect(); 
 					subscriptions.delete(this.voiceConnection.joinConfig.guildId);
 				}, 1.8e6); 
 
