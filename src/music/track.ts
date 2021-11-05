@@ -7,6 +7,7 @@ export interface TrackData {
 	title: string;
 	onStart: () => void;
 	onFinish: () => void;
+	onLeave: () => void;
 	onError: (error: Error) => void;
 }
 
@@ -27,13 +28,15 @@ export class Track implements TrackData {
 	public readonly title: string;
 	public readonly onStart: () => void;
 	public readonly onFinish: () => void;
+	public readonly onLeave: () => void;
 	public readonly onError: (error: Error) => void;
 
-	private constructor({ url, title, onStart, onFinish, onError }: TrackData) {
+	private constructor({ url, title, onStart, onFinish, onLeave, onError }: TrackData) {
 		this.url = url;
 		this.title = title;
 		this.onStart = onStart;
 		this.onFinish = onFinish;
+		this.onLeave = onLeave;
 		this.onError = onError;
 	}
 
@@ -79,7 +82,7 @@ export class Track implements TrackData {
 	 * @param methods Lifecycle callbacks
 	 * @returns The created Track
 	 */
-	public static async from(url: string, methods: Pick<Track, 'onStart' | 'onFinish' | 'onError'>): Promise<Track> {
+	public static async from(url: string, methods: Pick<Track, 'onStart' | 'onFinish' | 'onLeave' | 'onError'>): Promise<Track> {
 		const info = await getInfo(url);
 
 		// The methods are wrapped so that we can ensure that they are only called once.
@@ -91,6 +94,10 @@ export class Track implements TrackData {
 			onFinish() {
 				wrappedMethods.onFinish = noop;
 				methods.onFinish();
+			},
+			onLeave(){
+				wrappedMethods.onLeave = noop;
+				methods.onLeave();
 			},
 			onError(error: Error) {
 				wrappedMethods.onError = noop;

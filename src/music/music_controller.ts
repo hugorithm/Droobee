@@ -98,6 +98,9 @@ export async function playSong(parsedUserCommand: CommandContext, arg: string) {
         async onFinish() {
             await parsedUserCommand.originalMessage.channel.send(`Finished playing: **${track.title}**`);
         },
+        async onLeave() {
+            await parsedUserCommand.originalMessage.channel.send(`Bye! 👋`);
+        },
         async onError(error) {
             console.warn(error);
             await parsedUserCommand.originalMessage.channel.send('There was an unespected error!');
