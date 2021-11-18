@@ -16,7 +16,7 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_
 
 client.on('ready', () => {
     console.log(`I\'m alive! ${client.user?.tag}`);
-    client.user?.setActivity('with your auditive feelings.', {type: 'PLAYING'});
+    client.user?.setActivity('with your auditive feelings...', {type: 'PLAYING'});
 });
 
 const commandHandler = new CommandHandler(cfg.prefix);
