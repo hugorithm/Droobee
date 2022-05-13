@@ -63,16 +63,25 @@ export function unpause(sn: Snowflake): void {
     }
 }
 
-export function getQueue(sn: Snowflake): Track[] {
+export function getQueueHistory(sn: Snowflake): string[] {
     const sub = subscriptions.get(sn);
     if (!sub) {
         throw new Error("There should be a subscription here!");
     } else {
-        return sub.getQueue();
+        return sub.getQueueHistory();
     }
 }
 
-export async function connectToChannel(channel: VoiceChannel): Promise<VoiceConnection> {
+export function getCurrentSong(sn: Snowflake): Track | undefined {
+    const sub = subscriptions.get(sn);
+    if (!sub) {
+        throw new Error("There should be a subscription here!");
+    } else {
+        return sub.getCurrentSong();
+    }
+}
+
+export async function connectToChannel(channel: VoiceChannel) {
     const connection = joinVoiceChannel({
         channelId: channel.id,
         guildId: channel.guildId,
@@ -90,14 +99,6 @@ export async function connectToChannel(channel: VoiceChannel): Promise<VoiceConn
     }
 }
 
-export function disconnect(guildId: Snowflake): void {
-    const sub = subscriptions.get(guildId);
-    if (sub){
-        subscriptions.delete(guildId);
-        sub.voiceConnection.destroy();
-    } 
-}
-
 export async function playSong(parsedUserCommand: CommandContext, arg: string) {
     const track = await Track.from(arg, {
         async onStart() {
@@ -105,9 +106,6 @@ export async function playSong(parsedUserCommand: CommandContext, arg: string) {
         },
         async onFinish() {
             await parsedUserCommand.originalMessage.channel.send(`Finished playing: **${track.title}**`);
-        },
-        async onLeave() {
-            await parsedUserCommand.originalMessage.channel.send('Bye! 👋');
         },
         async onError(error) {
             console.warn(error);

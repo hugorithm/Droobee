@@ -3,13 +3,15 @@ import { AudioResource, createAudioResource, demuxProbe } from '@discordjs/voice
 import { raw as ytdl } from 'youtube-dl-exec';
 
 export interface TrackData {
+	id: number;
 	url: string;
 	title: string;
 	onStart: () => void;
 	onFinish: () => void;
-	onLeave: () => void;
 	onError: (error: Error) => void;
 }
+
+let index = 0;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const noop = () => {};
@@ -24,19 +26,19 @@ const noop = () => {};
  * queue, it is converted into an AudioResource just in time for playback.
  */
 export class Track implements TrackData {
+	public readonly id: number;
 	public readonly url: string;
 	public readonly title: string;
 	public readonly onStart: () => void;
 	public readonly onFinish: () => void;
-	public readonly onLeave: () => void;
 	public readonly onError: (error: Error) => void;
 
-	private constructor({ url, title, onStart, onFinish, onLeave, onError }: TrackData) {
+	private constructor({ id, url, title, onStart, onFinish, onError }: TrackData) {
+		this.id = id;
 		this.url = url;
 		this.title = title;
 		this.onStart = onStart;
 		this.onFinish = onFinish;
-		this.onLeave = onLeave;
 		this.onError = onError;
 	}
 
@@ -82,7 +84,7 @@ export class Track implements TrackData {
 	 * @param methods Lifecycle callbacks
 	 * @returns The created Track
 	 */
-	public static async from(url: string, methods: Pick<Track, 'onStart' | 'onFinish' | 'onLeave' | 'onError'>): Promise<Track> {
+	public static async from(url: string, methods: Pick<Track, 'onStart' | 'onFinish' | 'onError'>): Promise<Track> {
 		const info = await getInfo(url);
 
 		// The methods are wrapped so that we can ensure that they are only called once.
@@ -95,10 +97,6 @@ export class Track implements TrackData {
 				wrappedMethods.onFinish = noop;
 				methods.onFinish();
 			},
-			onLeave(){
-				wrappedMethods.onLeave = noop;
-				methods.onLeave();
-			},
 			onError(error: Error) {
 				wrappedMethods.onError = noop;
 				methods.onError(error);
@@ -106,6 +104,7 @@ export class Track implements TrackData {
 		};
 
 		return new Track({
+			id: index++,
 			title: info.videoDetails.title,
 			url,
 			...wrappedMethods,

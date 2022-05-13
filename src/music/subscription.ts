@@ -22,6 +22,8 @@ export class MusicSubscription {
 	public readonly voiceConnection: VoiceConnection;
 	public readonly audioPlayer: AudioPlayer;
 	public queue: Track[];
+	public queueLog: string[];
+	public currentTrack: Track | undefined;
 	public queueLock = false;
 	public readyLock = false;
 	public timeout: NodeJS.Timeout | undefined;
@@ -30,6 +32,9 @@ export class MusicSubscription {
 		this.voiceConnection = voiceConnection;
 		this.audioPlayer = createAudioPlayer();
 		this.queue = [];
+		this.queueLog = [];
+		this.currentTrack;
+		this.timeout;
 
 		this.voiceConnection.on('stateChange', async (_, newState) => {
 			if (newState.status === VoiceConnectionStatus.Disconnected) {
@@ -87,27 +92,25 @@ export class MusicSubscription {
 
 		// Configure audio player
 		this.audioPlayer.on('stateChange', (oldState, newState) => {
-			
+
 			if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
 				// If the Idle state is entered from a non-Idle state, it means that an audio resource has finished playing.
 				// The queue is then processed to start playing the next track, if one is available.
 				(oldState.resource as AudioResource<Track>).metadata.onFinish();
 				void this.processQueue();
 
-				if(this.timeout) clearTimeout(this.timeout);
-				this.timeout = setTimeout(() => { 
+				if (this.timeout) clearTimeout(this.timeout);
+				this.timeout = setTimeout(() => {
 					this.stop();
-					(oldState.resource as AudioResource<Track>).metadata.onLeave();
-					subscriptions.delete(this.voiceConnection.joinConfig.guildId);
 					this.voiceConnection.disconnect();
-				}, 3e5); 
-
+					subscriptions.delete(this.voiceConnection.joinConfig.guildId);
+				}, 1.8e6);
 
 			} else if (newState.status === AudioPlayerStatus.Playing) {
 				// If the Playing state has been entered, then a new track has started playback.
 				(newState.resource as AudioResource<Track>).metadata.onStart();
-				if(this.timeout) clearTimeout(this.timeout);
-			} 
+				if (this.timeout) clearTimeout(this.timeout);
+			}
 		});
 
 		this.audioPlayer.on('error', (error) => (error.resource as AudioResource<Track>).metadata.onError(error));
@@ -122,6 +125,8 @@ export class MusicSubscription {
 	 */
 	public enqueue(track: Track) {
 		this.queue.push(track);
+		const sTrack = track.title + ' | ' + track.url;
+		this.queueLog.push(sTrack);
 		void this.processQueue();
 	}
 
@@ -131,8 +136,25 @@ export class MusicSubscription {
 	public stop() {
 		this.queueLock = true;
 		this.queue = [];
+		this.queueLog = [];
 		this.audioPlayer.stop(true);
 	}
+
+	// /**
+	//  *  Checks if the queue is empty and leaves the channel in 5 minutes if true
+	//  */
+	// private checkEmptyQueue(timeout: NodeJS.Timeout | undefined): NodeJS.Timeout | undefined {
+	// 	if (this.queue.length === 0) {
+	// 		if(!timeout){
+	// 			timeout = setTimeout(() => { 
+	// 				this.stop();
+	// 				this.voiceConnection.destroy(); 
+	// 				subscriptions.delete(this.voiceConnection.joinConfig.guildId);
+	// 			}, 10000); 
+	// 		}
+	// 	}
+	// 	return timeout;
+	// }
 
 	/**
 	 * Attempts to play a Track from the queue
@@ -146,6 +168,7 @@ export class MusicSubscription {
 		this.queueLock = true;
 
 		// Take the first item from the queue. This is guaranteed to exist due to the non-empty check above.
+		this.currentTrack = this.queue.shift()!;
 		const nextTrack = this.queue.shift()!;
 		try {
 			// Attempt to convert the Track into an AudioResource (i.e. start streaming the video)
@@ -162,5 +185,13 @@ export class MusicSubscription {
 
 	public getQueue(): Track[] {
 		return this.queue;
+	}
+
+	public getQueueHistory(): string[] {
+		return this.queueLog;
+	}
+
+	public getCurrentSong(): Track | undefined {
+		return this.currentTrack;
 	}
 }
