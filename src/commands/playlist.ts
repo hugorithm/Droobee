@@ -1,6 +1,6 @@
 import { CommandContext } from '../models/command_context';
 import { Command } from './command';
-import { getCurrentSong, getQueue } from '../music/music_controller';
+import { getCurrentSong, getQueue, getQueueDuration } from '../music/music_controller';
 import { MessageEmbed } from 'discord.js';
 
 
@@ -36,14 +36,15 @@ export class Playlist implements Command {
         const ct = getCurrentSong(voiceChannel.guildId);
         if (ct) tracks.unshift(ct);
         
-        const stitle = tracks.reduce((acc, t) => `${acc}${t.id}. ${t.title} (${t.url}) \n`, "");
+        const stitle = tracks.reduce((acc, t) => `${acc}${t.id + 1}. ${t.title} \n ${t.url} \n`, "");
 
         if (!(tracks.length > 0)) return;
 
+        const queueDuration = getQueueDuration(voiceChannel.guildId);
         let embed = new MessageEmbed();
-        embed.setTitle('**THE MEGA QUEUE:**')
+        embed.setTitle('**Queue:**')
             .setDescription(`${stitle}`)
-            .setFooter(`LMFAO :D`);
+            .setFooter(`${queueDuration}`);
             
         await parsedUserCommand.originalMessage.channel.send({embeds: [embed]});
 

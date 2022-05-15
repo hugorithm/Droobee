@@ -72,6 +72,15 @@ export function getQueue(sn: Snowflake): Track[] {
     }
 }
 
+export function getQueueDuration(sn: Snowflake): string {
+    const sub = subscriptions.get(sn);
+    if (!sub) {
+        throw new Error("There should be a subscription here!");
+    } else {
+        return sub.getQueueDuration();
+    }
+}
+
 export function getCurrentSong(sn: Snowflake): Track | undefined {
     const sub = subscriptions.get(sn);
     if (!sub) {

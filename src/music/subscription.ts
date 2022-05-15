@@ -184,6 +184,11 @@ export class MusicSubscription {
 		return this.queue.slice();
 	}
 
+	public getQueueDuration(): string {
+		const secs = this.queue.reduce((acc, q) => acc + q.rawDuration, 0);
+		return Track.formatTime(secs);
+	}
+
 	public getCurrentSong(): Track | undefined {
 		return this.currentTrack;
 	}

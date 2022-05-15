@@ -8,6 +8,7 @@ export interface TrackData {
 	title: string;
 	thumbnail: string;
 	duration: string;
+	rawDuration: number;
 	ageRestricted: boolean;
 	onStart: () => void;
 	onFinish: () => void;
@@ -34,17 +35,19 @@ export class Track implements TrackData {
 	public readonly title: string;
 	public readonly thumbnail: string;
 	public readonly duration: string;
+	public readonly rawDuration: number;
 	public readonly ageRestricted: boolean;
 	public readonly onStart: () => void;
 	public readonly onFinish: () => void;
 	public readonly onError: (error: Error) => void;
 
-	private constructor({ id, url, thumbnail, duration, ageRestricted, title, onStart, onFinish, onError }: TrackData) {
+	private constructor({ id, url, thumbnail, duration, rawDuration, ageRestricted, title, onStart, onFinish, onError }: TrackData) {
 		this.id = id;
 		this.url = url;
 		this.title = title;
 		this.thumbnail = thumbnail;
 		this.duration = duration;
+		this.rawDuration = rawDuration;
 		this.ageRestricted = ageRestricted;
 		this.onStart = onStart;
 		this.onFinish = onFinish;
@@ -121,15 +124,16 @@ export class Track implements TrackData {
 			title: info.videoDetails.title,
 			thumbnail: thumbnail.url, 
 			duration: this.formatTime(info.videoDetails.lengthSeconds),
+			rawDuration: Number(info.videoDetails.lengthSeconds),
 			ageRestricted: info.videoDetails.age_restricted,
 			url,
 			...wrappedMethods,
 		});
 	}
 
-	public static formatTime(time: string): string {
+	public static formatTime(time: string | number): string {
 		try {
-			const parsedTime = parseInt(time);
+			const parsedTime = typeof time === 'string' ? parseInt(time) : time;
 			const minutes = Math.floor(parsedTime / 60);
 			const seconds = parsedTime - minutes * 60;
 			return minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
