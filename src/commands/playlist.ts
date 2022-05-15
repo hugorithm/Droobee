@@ -31,6 +31,7 @@ export class Playlist implements Command {
         }
 
         const tracks = getQueue(voiceChannel.guildId);
+
         const ct = getCurrentSong(voiceChannel.guildId);
         if (ct) tracks.unshift(ct);
         

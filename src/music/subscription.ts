@@ -186,7 +186,7 @@ export class MusicSubscription {
 	}
 
 	public getQueue(): Track[] {
-		return this.queue;
+		return this.queue.slice();
 	}
 
 	public getQueueHistory(): string[] {
