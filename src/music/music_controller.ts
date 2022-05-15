@@ -112,20 +112,20 @@ export async function playSong(parsedUserCommand: CommandContext, arg: string) {
         async onStart() {
             
             let embed = new MessageEmbed();
-            embed.setDescription(`**${track.title}** \n ${track.url}`)
+            embed.setTitle('**Now Playing:**')
+                .setDescription(`**${track.title}** \n ${track.url}`)
                 .setThumbnail(track.thumbnail)
                 .setFooter(`Duration: ${track.duration}`);
 
-            await parsedUserCommand.originalMessage.channel.send('**Now Playing:**');
             await parsedUserCommand.originalMessage.channel.send({embeds: [embed]});
         },
         async onFinish() {
             let embed = new MessageEmbed();
-            embed.setDescription(`**${track.title}** \n ${track.url}`)
+            embed.setTitle('**Finished playing:**')
+                .setDescription(`**${track.title}** \n ${track.url}`)
                 .setThumbnail(track.thumbnail)
                 .setFooter(`Duration: ${track.duration}`);
 
-            await parsedUserCommand.originalMessage.channel.send('**Finished playing:**');
             await parsedUserCommand.originalMessage.channel.send({embeds: [embed]});
         },
         async onError(error) {
