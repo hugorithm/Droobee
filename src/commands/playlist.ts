@@ -30,12 +30,12 @@ export class Playlist implements Command {
             return;
         }
 
-        const pl = getQueue(voiceChannel.guildId);
+        const tracks = getQueue(voiceChannel.guildId);
         let stitle = "";
-        pl.forEach(x => {
-            stitle = stitle.concat(x.title, " | ".concat(x.url) , "\n");
+        tracks.forEach(t => {
+            stitle = stitle.concat(t.title, " | ".concat(t.url) , "\n");
         });
-        if(!(pl.length > 0)) return;
+        if(!(tracks.length > 0)) return;
         await parsedUserCommand.originalMessage.channel.send(`\`\`\`${stitle}\`\`\``);
 
 

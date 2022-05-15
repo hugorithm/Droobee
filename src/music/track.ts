@@ -1,4 +1,4 @@
-import { getInfo } from 'ytdl-core';
+import { getInfo, thumbnail } from 'ytdl-core';
 import { AudioResource, createAudioResource, demuxProbe } from '@discordjs/voice';
 import { raw as ytdl } from 'youtube-dl-exec';
 
@@ -6,6 +6,9 @@ export interface TrackData {
 	id: number;
 	url: string;
 	title: string;
+	thumbnail: string;
+	duration: string;
+	ageRestricted: boolean;
 	onStart: () => void;
 	onFinish: () => void;
 	onError: (error: Error) => void;
@@ -14,7 +17,7 @@ export interface TrackData {
 let index = 0;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-const noop = () => {};
+const noop = () => { };
 
 /**
  * A Track represents information about a YouTube video (in this context) that can be added to a queue.
@@ -29,14 +32,20 @@ export class Track implements TrackData {
 	public readonly id: number;
 	public readonly url: string;
 	public readonly title: string;
+	public readonly thumbnail: string;
+	public readonly duration: string;
+	public readonly ageRestricted: boolean;
 	public readonly onStart: () => void;
 	public readonly onFinish: () => void;
 	public readonly onError: (error: Error) => void;
 
-	private constructor({ id, url, title, onStart, onFinish, onError }: TrackData) {
+	private constructor({ id, url, thumbnail, duration, ageRestricted, title, onStart, onFinish, onError }: TrackData) {
 		this.id = id;
 		this.url = url;
 		this.title = title;
+		this.thumbnail = thumbnail;
+		this.duration = duration;
+		this.ageRestricted = ageRestricted;
 		this.onStart = onStart;
 		this.onFinish = onFinish;
 		this.onError = onError;
@@ -45,6 +54,8 @@ export class Track implements TrackData {
 	/**
 	 * Creates an AudioResource from this Track.
 	 */
+
+
 	public createAudioResource(): Promise<AudioResource<Track>> {
 		return new Promise((resolve, reject) => {
 			const process = ytdl(
@@ -106,8 +117,22 @@ export class Track implements TrackData {
 		return new Track({
 			id: index++,
 			title: info.videoDetails.title,
+			thumbnail: info.videoDetails.thumbnails[0].url, //assume first thumbnail
+			duration: this.formatTime(info.videoDetails.lengthSeconds),
+			ageRestricted: info.videoDetails.age_restricted,
 			url,
 			...wrappedMethods,
 		});
+	}
+
+	public static formatTime(time: string): string {
+		try {
+			const parsedTime = parseInt(time);
+			const minutes = Math.floor(parsedTime / 60);
+			const seconds = parsedTime - minutes * 60;
+			return minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+		} catch (err) {
+			throw err;
+		}
 	}
 }

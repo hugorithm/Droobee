@@ -168,8 +168,10 @@ export class MusicSubscription {
 		this.queueLock = true;
 
 		// Take the first item from the queue. This is guaranteed to exist due to the non-empty check above.
-		this.currentTrack = this.queue.shift()!;
+		
 		const nextTrack = this.queue.shift()!;
+		this.currentTrack = nextTrack;
+		
 		try {
 			// Attempt to convert the Track into an AudioResource (i.e. start streaming the video)
 			const resource = await nextTrack.createAudioResource();
