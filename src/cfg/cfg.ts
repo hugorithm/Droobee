@@ -16,7 +16,7 @@ export const cfg: BotCfg = {
 
 function loadToken(): string{
     try{
-        return fs.readFileSync('token').toString();
+        return fs.readFileSync('token').toString().trim();
     }catch{
         if(process.env.TOKEN){
             return process.env.TOKEN;
