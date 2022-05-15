@@ -41,6 +41,7 @@ export class Playlist implements Command {
         let embed = new MessageEmbed();
         embed.setTitle('**Queue:**')
             .setDescription(`${stitle}`)
+            .setThumbnail('https://cdn.discordapp.com/attachments/143882671179825153/975540913583583242/unknown.png')
             .setFooter(`${queueDuration}`);
             
         await parsedUserCommand.originalMessage.channel.send({embeds: [embed]});
