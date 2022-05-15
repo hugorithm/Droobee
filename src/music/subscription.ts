@@ -187,7 +187,9 @@ export class MusicSubscription {
 	}
 
 	public getQueueDuration(): string {
-		const secs = this.queue.reduce((acc, q) => acc + q.rawDuration, 0);
+		const currentQueue = this.queue.slice();
+		if (this.currentTrack) currentQueue.unshift(this.currentTrack);
+		const secs = currentQueue.reduce((acc, q) => acc + q.rawDuration, 0);
 		return Track.formatTime(secs);
 	}
 
