@@ -1,6 +1,6 @@
 import { CommandContext } from '../models/command_context';
 import { Command } from './command';
-import { getQueue } from '../music/music_controller';
+import { getCurrentSong, getQueue } from '../music/music_controller';
 
 
 export class Playlist implements Command {
@@ -31,17 +31,18 @@ export class Playlist implements Command {
         }
 
         const tracks = getQueue(voiceChannel.guildId);
-        let stitle = "";
-        tracks.forEach(t => {
-            stitle = stitle.concat(t.title, " | ".concat(t.url) , "\n");
-        });
-        if(!(tracks.length > 0)) return;
+        const ct = getCurrentSong(voiceChannel.guildId);
+        if (ct) tracks.unshift(ct);
+        
+        const stitle = tracks.reduce((acc, t) => `${acc}${t.title} | ${t.url} \n`, "");
+
+        if (!(tracks.length > 0)) return;
         await parsedUserCommand.originalMessage.channel.send(`\`\`\`${stitle}\`\`\``);
 
 
     }
 
-    
+
     hasPermissionToRun(parsedUserCommand: CommandContext): boolean {
         return true;
     }
