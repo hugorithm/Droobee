@@ -144,6 +144,6 @@ export async function playSong(parsedUserCommand: CommandContext, arg: string) {
     });
 
     enqueue(parsedUserCommand.originalMessage.guildId!, track);
-    await parsedUserCommand.originalMessage.channel.send(`**${track.title}** was added to the playlist!`);
+    await parsedUserCommand.originalMessage.channel.send(`**${track.title}** was added to the playlist! [\`\`\` ${track.duration} \`\`\`] `);
 }
 
