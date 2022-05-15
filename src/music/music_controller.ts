@@ -1,5 +1,5 @@
 import { entersState, joinVoiceChannel, VoiceConnection, VoiceConnectionStatus } from "@discordjs/voice";
-import { Snowflake, VoiceChannel } from "discord.js";
+import { MessageEmbed, Snowflake, VoiceChannel } from "discord.js";
 import { createDiscordJSAdapter } from "../adapters/adapter";
 import { CommandContext } from "../models/command_context";
 import { MusicSubscription } from "./subscription";
@@ -72,7 +72,16 @@ export function getQueue(sn: Snowflake): Track[] {
     }
 }
 
-export async function connectToChannel(channel: VoiceChannel): Promise<VoiceConnection> {
+export function getCurrentSong(sn: Snowflake): Track | undefined {
+    const sub = subscriptions.get(sn);
+    if (!sub) {
+        throw new Error("There should be a subscription here!");
+    } else {
+        return sub.getCurrentSong();
+    }
+}
+
+export async function connectToChannel(channel: VoiceChannel) {
     const connection = joinVoiceChannel({
         channelId: channel.id,
         guildId: channel.guildId,
@@ -101,13 +110,23 @@ export function disconnect(guildId: Snowflake): void {
 export async function playSong(parsedUserCommand: CommandContext, arg: string) {
     const track = await Track.from(arg, {
         async onStart() {
-            await parsedUserCommand.originalMessage.channel.send(`Now Playing: **${track.title}**`);
+            
+            let embed = new MessageEmbed();
+            embed.setTitle('**Now Playing:**')
+                .setDescription(`**${track.title}** \n ${track.url}`)
+                .setThumbnail(track.thumbnail)
+                .setFooter(`Duration: ${track.duration}`);
+
+            await parsedUserCommand.originalMessage.channel.send({embeds: [embed]});
         },
         async onFinish() {
-            await parsedUserCommand.originalMessage.channel.send(`Finished playing: **${track.title}**`);
-        },
-        async onLeave() {
-            await parsedUserCommand.originalMessage.channel.send('Bye! 👋');
+            let embed = new MessageEmbed();
+            embed.setTitle('**Finished playing:**')
+                .setDescription(`**${track.title}** \n ${track.url}`)
+                .setThumbnail(track.thumbnail)
+                .setFooter(`Duration: ${track.duration}`);
+
+            await parsedUserCommand.originalMessage.channel.send({embeds: [embed]});
         },
         async onError(error) {
             console.warn(error);

@@ -9,7 +9,7 @@ export type BotCfg = {
 
 export const cfg: BotCfg = {
     token: loadToken(),
-    prefix: '!',
+    prefix: '|',
     botOwnerRole: 'someRole',
     enableReactions: false
 };
