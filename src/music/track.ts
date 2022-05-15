@@ -114,10 +114,12 @@ export class Track implements TrackData {
 			},
 		};
 
+		const thumbnail = info.videoDetails.thumbnails.sort((a, b) => b.height * b.width - a.height * a.width)[0];
+
 		return new Track({
 			id: index++,
 			title: info.videoDetails.title,
-			thumbnail: info.videoDetails.thumbnails[0].url, //assume first thumbnail
+			thumbnail: thumbnail.url, //assume first thumbnail
 			duration: this.formatTime(info.videoDetails.lengthSeconds),
 			ageRestricted: info.videoDetails.age_restricted,
 			url,
