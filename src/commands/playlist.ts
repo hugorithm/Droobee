@@ -1,6 +1,7 @@
 import { CommandContext } from '../models/command_context';
 import { Command } from './command';
 import { getCurrentSong, getQueue } from '../music/music_controller';
+import { MessageEmbed } from 'discord.js';
 
 
 export class Playlist implements Command {
@@ -35,10 +36,16 @@ export class Playlist implements Command {
         const ct = getCurrentSong(voiceChannel.guildId);
         if (ct) tracks.unshift(ct);
         
-        const stitle = tracks.reduce((acc, t) => `${acc}${t.title} | ${t.url} \n`, "");
+        const stitle = tracks.reduce((acc, t) => `${acc}${t.id}. ${t.title} (${t.url}) \n`, "");
 
         if (!(tracks.length > 0)) return;
-        await parsedUserCommand.originalMessage.channel.send(`\`\`\`${stitle}\`\`\``);
+
+        let embed = new MessageEmbed();
+        embed.setTitle('**THE MEGA QUEUE:**')
+            .setDescription(`${stitle}`)
+            .setFooter(`LMFAO :D`);
+            
+        await parsedUserCommand.originalMessage.channel.send({embeds: [embed]});
 
 
     }
