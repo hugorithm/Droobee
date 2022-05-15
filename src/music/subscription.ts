@@ -22,7 +22,6 @@ export class MusicSubscription {
 	public readonly voiceConnection: VoiceConnection;
 	public readonly audioPlayer: AudioPlayer;
 	public queue: Track[];
-	public queueLog: string[];
 	public currentTrack: Track | undefined;
 	public queueLock = false;
 	public readyLock = false;
@@ -32,7 +31,6 @@ export class MusicSubscription {
 		this.voiceConnection = voiceConnection;
 		this.audioPlayer = createAudioPlayer();
 		this.queue = [];
-		this.queueLog = [];
 		this.currentTrack;
 		this.timeout;
 
@@ -125,8 +123,6 @@ export class MusicSubscription {
 	 */
 	public enqueue(track: Track) {
 		this.queue.push(track);
-		const sTrack = track.title + ' | ' + track.url;
-		this.queueLog.push(sTrack);
 		void this.processQueue();
 	}
 
@@ -136,7 +132,6 @@ export class MusicSubscription {
 	public stop() {
 		this.queueLock = true;
 		this.queue = [];
-		this.queueLog = [];
 		this.audioPlayer.stop(true);
 	}
 
@@ -187,10 +182,6 @@ export class MusicSubscription {
 
 	public getQueue(): Track[] {
 		return this.queue.slice();
-	}
-
-	public getQueueHistory(): string[] {
-		return this.queueLog;
 	}
 
 	public getCurrentSong(): Track | undefined {
