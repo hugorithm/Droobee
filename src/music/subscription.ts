@@ -181,7 +181,9 @@ export class MusicSubscription {
 	}
 
 	public getQueue(): Track[] {
-		return this.queue.slice();
+		const currentQueue = this.queue.slice();
+		if (this.currentTrack) currentQueue.unshift(this.currentTrack);
+		return currentQueue;
 	}
 
 	public getQueueDuration(): string {

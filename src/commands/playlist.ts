@@ -32,9 +32,6 @@ export class Playlist implements Command {
         }
 
         const tracks = getQueue(voiceChannel.guildId);
-
-        const ct = getCurrentSong(voiceChannel.guildId);
-        if (ct) tracks.unshift(ct);
         
         const stitle = tracks.reduce((acc, t) => `${acc}${t.id + 1}. ${t.title} \n ${t.url} \n`, "");
 
@@ -47,10 +44,7 @@ export class Playlist implements Command {
             .setFooter(`${queueDuration}`);
             
         await parsedUserCommand.originalMessage.channel.send({embeds: [embed]});
-
-
     }
-
 
     hasPermissionToRun(parsedUserCommand: CommandContext): boolean {
         return true;
