@@ -15,7 +15,8 @@ export interface TrackData {
 	onError: (error: Error) => void;
 }
 
-let index = 0;
+
+let id = 0;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const noop = () => { };
@@ -63,10 +64,10 @@ export class Track implements TrackData {
 			const process = ytdl(
 				this.url,
 				{
-					output: '-',
-					quiet: true,
-					format: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
-					limitRate: '100K',
+					output: '-', //o
+					quiet: true, //q
+					format: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio', //f
+					limitRate: '100K', //r
 				},
 				{ stdio: ['ignore', 'pipe', 'ignore'] },
 			);
@@ -116,14 +117,16 @@ export class Track implements TrackData {
 			},
 		};
 
+		//order array by max aspect ration and get that value
 		const thumbnail = info.videoDetails.thumbnails.sort((a, b) => b.height * b.width - a.height * a.width)[0]; //assume first thumbnail
+		const qDuration = parseInt(info.videoDetails.lengthSeconds);
 
 		return new Track({
-			id: index++,
+			id: id++,
 			title: info.videoDetails.title,
 			thumbnail: thumbnail.url, 
 			duration: this.formatTime(info.videoDetails.lengthSeconds),
-			rawDuration: Number(info.videoDetails.lengthSeconds),
+			rawDuration: qDuration,
 			ageRestricted: info.videoDetails.age_restricted,
 			url,
 			...wrappedMethods,

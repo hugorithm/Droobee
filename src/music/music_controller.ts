@@ -28,7 +28,7 @@ export function subscribe(connection: VoiceConnection, guildId: Snowflake): void
 export function skip(sn: Snowflake): void {
     const sub = subscriptions.get(sn);
     if (!sub) {
-        throw new Error("There should be a subscription here!");
+        throw new Error('There should be a subscription here!');
     } else {
         sub.audioPlayer.stop();
     }
@@ -37,7 +37,7 @@ export function skip(sn: Snowflake): void {
 export function stop(sn: Snowflake): void {         //Pass existing connection here
     const sub = subscriptions.get(sn);
     if (!sub) {
-        throw new Error("There should be a subscription here!");
+        throw new Error('There should be a subscription here!');
     } else {
         sub.stop();
         sub.voiceConnection.destroy();
@@ -57,7 +57,7 @@ export function pause(sn: Snowflake): void {
 export function unpause(sn: Snowflake): void {
     const sub = subscriptions.get(sn);
     if (!sub) {
-        throw new Error("There should be a subscription here!");
+        throw new Error('There should be a subscription here!');
     } else {
         sub.audioPlayer.unpause();
     }
@@ -66,7 +66,7 @@ export function unpause(sn: Snowflake): void {
 export function getQueue(sn: Snowflake): Track[] {
     const sub = subscriptions.get(sn);
     if (!sub) {
-        throw new Error("There should be a subscription here!");
+        throw new Error('There should be a subscription here!');
     } else {
         return sub.getQueue();
     }
@@ -75,7 +75,7 @@ export function getQueue(sn: Snowflake): Track[] {
 export function getQueueDuration(sn: Snowflake): string {
     const sub = subscriptions.get(sn);
     if (!sub) {
-        throw new Error("There should be a subscription here!");
+        throw new Error('There should be a subscription here!');
     } else {
         return sub.getQueueDuration();
     }
@@ -84,7 +84,7 @@ export function getQueueDuration(sn: Snowflake): string {
 export function getCurrentSong(sn: Snowflake): Track | undefined {
     const sub = subscriptions.get(sn);
     if (!sub) {
-        throw new Error("There should be a subscription here!");
+        throw new Error('There should be a subscription here!');
     } else {
         return sub.getCurrentSong();
     }
@@ -110,32 +110,36 @@ export async function connectToChannel(channel: VoiceChannel) {
 
 export function disconnect(guildId: Snowflake): void {
     const sub = subscriptions.get(guildId);
-    if (sub){
+    if (sub) {
         subscriptions.delete(guildId);
         sub.voiceConnection.destroy();
-    } 
+    }
 }
 
 export async function playSong(parsedUserCommand: CommandContext, arg: string) {
     const track = await Track.from(arg, {
         async onStart() {
-            
+
             let embed = new MessageEmbed();
             embed.setTitle('**Now Playing:**')
+                .setColor('#3e51b5')
                 .setDescription(`**${track.title}** \n ${track.url}`)
                 .setThumbnail(track.thumbnail)
-                .setFooter(`Duration: ${track.duration}`);
+                .setTimestamp()
+                .setFooter({ text: `Duration: ${track.duration}` });
 
-            await parsedUserCommand.originalMessage.channel.send({embeds: [embed]});
+            await parsedUserCommand.originalMessage.channel.send({ embeds: [embed] });
         },
         async onFinish() {
             let embed = new MessageEmbed();
             embed.setTitle('**Finished playing:**')
+                .setColor('#f44336')
                 .setDescription(`**${track.title}** \n ${track.url}`)
                 .setThumbnail(track.thumbnail)
-                .setFooter(`Duration: ${track.duration}`);
+                .setTimestamp()
+                .setFooter({ text: `Duration: ${track.duration}` });
 
-            await parsedUserCommand.originalMessage.channel.send({embeds: [embed]});
+            await parsedUserCommand.originalMessage.channel.send({ embeds: [embed] });
         },
         async onError(error) {
             console.warn(error);
@@ -144,6 +148,19 @@ export async function playSong(parsedUserCommand: CommandContext, arg: string) {
     });
 
     enqueue(parsedUserCommand.originalMessage.guildId!, track);
-    await parsedUserCommand.originalMessage.channel.send(`**${track.title}** was added to the playlist! \`[${track.duration}]\` `);
+
+    const ava = parsedUserCommand.originalMessage.author.avatar ?? '';
+    const user = parsedUserCommand.originalMessage.author.username;
+
+    let embed = new MessageEmbed();
+    embed.setTitle('**Song added:**')
+        .setAuthor({ name: user, iconURL: ava })
+        .setColor('#3e51b5')
+        .setDescription(`**${track.title}** was added to the playlist!`)
+        .setThumbnail(track.thumbnail)
+        .setTimestamp()
+        .setFooter({ text: `Duration: ${track.duration}` });
+
+    await parsedUserCommand.originalMessage.channel.send({ embeds: [embed] });
 }
 
