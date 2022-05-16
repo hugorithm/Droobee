@@ -33,7 +33,7 @@ export class Playlist implements Command {
 
         const tracks = getQueue(voiceChannel.guildId);
         
-        const stitle = tracks.reduce((acc, t) => `${acc}${t.id + 1}. ${t.title} \n ${t.url} [${t.author}] \n`, "");
+        const stitle = tracks.reduce((acc, t) => `${acc}${t.id + 1}. ${t.title} \n ${t.url} \`[${t.author}]\` \n`, "");
 
         if (!(tracks.length > 0)) return;
 
