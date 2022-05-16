@@ -150,7 +150,7 @@ export async function playSong(parsedUserCommand: CommandContext, arg: string) {
 
     enqueue(parsedUserCommand.originalMessage.guildId!, track);
 
-    const ava = parsedUserCommand.originalMessage.author.avatar ?? '';
+    const ava = parsedUserCommand.originalMessage.author.displayAvatarURL();
     const user = parsedUserCommand.originalMessage.author.username;
 
     let embed = new MessageEmbed();
