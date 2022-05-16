@@ -151,11 +151,12 @@ export async function playSong(parsedUserCommand: CommandContext, arg: string) {
     enqueue(parsedUserCommand.originalMessage.guildId!, track);
 
     const ava = parsedUserCommand.originalMessage.author.displayAvatarURL();
-    const user = parsedUserCommand.originalMessage.author.username;
+    const user = `${parsedUserCommand.originalMessage.author.username} \`[${parsedUserCommand.originalMessage.author.tag}]\``;
 
     let embed = new MessageEmbed();
     embed.setTitle('**Song was added to the playlist!**')
         .setAuthor({ name: user, iconURL: ava })
+        .setURL(track.url)
         .setColor('#3e51b5')
         .setDescription(`**${track.title}** \n ${track.url}`)
         .setThumbnail(track.thumbnail)
