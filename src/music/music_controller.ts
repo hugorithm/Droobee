@@ -117,7 +117,7 @@ export function disconnect(guildId: Snowflake): void {
 }
 
 export async function playSong(parsedUserCommand: CommandContext, arg: string) {
-    const track = await Track.from(arg, parsedUserCommand, {
+    const track = await Track.from(arg, parsedUserCommand.originalMessage.author, {
         async onStart() {
             let embed = new MessageEmbed();
             embed.setTitle('**Now Playing:**')
