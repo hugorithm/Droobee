@@ -32,21 +32,30 @@ export class Playlist implements Command {
         }
 
         const tracks = getQueue(voiceChannel.guildId);
-        
-        const stitle = tracks.reduce((acc, t) => `${acc}${t.id + 1}. ${t.title} \n ${t.url} \`[${t.author}]\` \n`, "");
-
-        if (!(tracks.length > 0)) return;
+        const ctracks = tracks.slice();
 
         const queueDuration = getQueueDuration(voiceChannel.guildId);
 
-        let embed = new MessageEmbed();
-        embed.setTitle('**Queue:**')
-            .setDescription(`${stitle}`)
-            .setColor('#3e51b5')
-            .setThumbnail('https://cdn.discordapp.com/attachments/143882671179825153/975540913583583242/unknown.png')
-            .setFooter({text: `Duration: ${queueDuration}`});
-            
-        await parsedUserCommand.originalMessage.channel.send({embeds: [embed]});
+
+
+        if (!(tracks.length > 0)) return;
+
+        let embeds: MessageEmbed[] = [];
+        let page = 0;
+        while (ctracks.length) {
+            page++;
+            const tracks = ctracks.splice(0, 10);
+            const stitle = tracks.reduce((acc, t) => `${acc}${t.id + 1}. ${t.title} \n ${t.url} \`[${t.author}]\` \n`, "");
+            let embed = new MessageEmbed();
+            embed.setTitle('**Queue:**')
+                .setDescription(stitle)
+                .setColor('#3e51b5')
+                .setThumbnail('https://cdn.discordapp.com/attachments/143882671179825153/975540913583583242/unknown.png')
+                .setFooter({ text: `Duration: ${queueDuration}  Page:${page}/${tracks.length}` });
+            embeds.push(embed);
+        }
+
+        await parsedUserCommand.originalMessage.channel.send({ embeds: embeds });
     }
 
     hasPermissionToRun(parsedUserCommand: CommandContext): boolean {
