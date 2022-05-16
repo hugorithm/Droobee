@@ -127,7 +127,7 @@ export class Track implements TrackData {
 
 		return new Track({
 			id: id++,
-			author: parsedUserCommand.originalMessage.author.username + parsedUserCommand.originalMessage.author.tag,
+			author: parsedUserCommand.originalMessage.author.tag,
 			title: info.videoDetails.title,
 			thumbnail: thumbnail.url, 
 			duration: this.formatTime(info.videoDetails.lengthSeconds),
