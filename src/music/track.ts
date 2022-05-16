@@ -2,6 +2,7 @@ import { getInfo } from 'ytdl-core';
 import { AudioResource, createAudioResource, demuxProbe } from '@discordjs/voice';
 import { raw as ytdl } from 'youtube-dl-exec';
 import { CommandContext } from '../models/command_context';
+import { User } from 'discord.js';
 
 export interface TrackData {
 	id: number;
@@ -102,7 +103,7 @@ export class Track implements TrackData {
 	 * @param methods Lifecycle callbacks
 	 * @returns The created Track
 	 */
-	public static async from(url: string, parsedUserCommand: CommandContext, methods: Pick<Track, 'onStart' | 'onFinish' | 'onError'>): Promise<Track> {
+	public static async from(url: string, author: User, methods: Pick<Track, 'onStart' | 'onFinish' | 'onError'>): Promise<Track> {
 		const info = await getInfo(url);
 
 		// The methods are wrapped so that we can ensure that they are only called once.
@@ -127,7 +128,7 @@ export class Track implements TrackData {
 
 		return new Track({
 			id: id++,
-			author: parsedUserCommand.originalMessage.author.tag,
+			author: author.tag,
 			title: info.videoDetails.title,
 			thumbnail: thumbnail.url, 
 			duration: this.formatTime(info.videoDetails.lengthSeconds),
