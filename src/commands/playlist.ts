@@ -50,7 +50,7 @@ export class Playlist implements Command {
                 .setDescription(stitle)
                 .setColor('#3e51b5')
                 .setThumbnail('https://cdn.discordapp.com/attachments/143882671179825153/975540913583583242/unknown.png')
-                .setFooter({ text: `Duration: ${queueDuration} | Page:${page}/${totalPages}` });
+                .setFooter({ text: `Duration: ${queueDuration} | Page: ${page}/${totalPages}` });
             embeds.push(embed);
         }
 

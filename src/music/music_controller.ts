@@ -151,7 +151,7 @@ export async function playSong(parsedUserCommand: CommandContext, arg: string) {
     enqueue(parsedUserCommand.originalMessage.guildId!, track);
 
     const ava = parsedUserCommand.originalMessage.author.displayAvatarURL();
-    const user = `${parsedUserCommand.originalMessage.author.username} s[${parsedUserCommand.originalMessage.author.tag}]`; 
+    const user = `${parsedUserCommand.originalMessage.member?.nickname} [${parsedUserCommand.originalMessage.author.username}]`; 
 
     let embed = new MessageEmbed();
     embed.setTitle('**Song was added to the playlist!**')
