@@ -123,6 +123,7 @@ export async function playSong(parsedUserCommand: CommandContext, arg: string) {
             let embed = new MessageEmbed();
             embed.setTitle('**Now Playing:**')
                 .setColor('#3e51b5')
+                .setURL(track.url)
                 .setDescription(`**${track.title}** \n ${track.url}`)
                 .setThumbnail(track.thumbnail)
                 .setTimestamp()
@@ -134,6 +135,7 @@ export async function playSong(parsedUserCommand: CommandContext, arg: string) {
             let embed = new MessageEmbed();
             embed.setTitle('**Finished playing:**')
                 .setColor('#f44336')
+                .setURL(track.url)
                 .setDescription(`**${track.title}** \n ${track.url}`)
                 .setThumbnail(track.thumbnail)
                 .setTimestamp()
