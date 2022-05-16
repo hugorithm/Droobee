@@ -117,9 +117,8 @@ export function disconnect(guildId: Snowflake): void {
 }
 
 export async function playSong(parsedUserCommand: CommandContext, arg: string) {
-    const track = await Track.from(arg, {
+    const track = await Track.from(arg, parsedUserCommand, {
         async onStart() {
-
             let embed = new MessageEmbed();
             embed.setTitle('**Now Playing:**')
                 .setColor('#3e51b5')
