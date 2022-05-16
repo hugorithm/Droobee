@@ -39,6 +39,7 @@ export class Playlist implements Command {
 
         let embeds: MessageEmbed[] = [];
         let page = 0;
+        const totalPages = Math.ceil(ctracks.length / 10);
 
         while (ctracks.length) {
             page++;
@@ -49,7 +50,7 @@ export class Playlist implements Command {
                 .setDescription(stitle)
                 .setColor('#3e51b5')
                 .setThumbnail('https://cdn.discordapp.com/attachments/143882671179825153/975540913583583242/unknown.png')
-                .setFooter({ text: `Duration: ${queueDuration} | Page:${page}/${tracks.length}` });
+                .setFooter({ text: `Duration: ${queueDuration} | Page:${page}/${totalPages}` });
             embeds.push(embed);
         }
 
