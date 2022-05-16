@@ -38,11 +38,12 @@ export class Playlist implements Command {
         if (!(tracks.length > 0)) return;
 
         const queueDuration = getQueueDuration(voiceChannel.guildId);
+
         let embed = new MessageEmbed();
         embed.setTitle('**Queue:**')
             .setDescription(`${stitle}`)
             .setThumbnail('https://cdn.discordapp.com/attachments/143882671179825153/975540913583583242/unknown.png')
-            .setFooter({text: `${queueDuration}`});
+            .setFooter({text: `Duration: ${queueDuration}`});
             
         await parsedUserCommand.originalMessage.channel.send({embeds: [embed]});
     }

@@ -153,10 +153,10 @@ export async function playSong(parsedUserCommand: CommandContext, arg: string) {
     const user = parsedUserCommand.originalMessage.author.username;
 
     let embed = new MessageEmbed();
-    embed.setTitle('**Song added:**')
+    embed.setTitle('**Song was added to the playlist!**')
         .setAuthor({ name: user, iconURL: ava })
         .setColor('#3e51b5')
-        .setDescription(`**${track.title}** was added to the playlist!`)
+        .setDescription(`**${track.title}** \n ${track.url}`)
         .setThumbnail(track.thumbnail)
         .setTimestamp()
         .setFooter({ text: `Duration: ${track.duration}` });
