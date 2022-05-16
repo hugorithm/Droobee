@@ -33,15 +33,13 @@ export class Playlist implements Command {
 
         const tracks = getQueue(voiceChannel.guildId);
         const ctracks = tracks.slice();
-
         const queueDuration = getQueueDuration(voiceChannel.guildId);
-
-
 
         if (!(tracks.length > 0)) return;
 
         let embeds: MessageEmbed[] = [];
         let page = 0;
+
         while (ctracks.length) {
             page++;
             const tracks = ctracks.splice(0, 10);
@@ -51,7 +49,7 @@ export class Playlist implements Command {
                 .setDescription(stitle)
                 .setColor('#3e51b5')
                 .setThumbnail('https://cdn.discordapp.com/attachments/143882671179825153/975540913583583242/unknown.png')
-                .setFooter({ text: `Duration: ${queueDuration}  Page:${page}/${tracks.length}` });
+                .setFooter({ text: `Duration: ${queueDuration} | Page:${page}/${tracks.length}` });
             embeds.push(embed);
         }
 
