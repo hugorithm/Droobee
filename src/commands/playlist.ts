@@ -39,7 +39,7 @@ export class Playlist implements Command {
 
         let embeds: MessageEmbed[] = [];
         let page = 0;
-        const totalPages = Math.ceil(ctracks.length / 10);
+        const totalPages = Math.ceil(ctracks.length / 10); //page size is 10, round number of pages to next int
 
         while (ctracks.length) {
             page++;
