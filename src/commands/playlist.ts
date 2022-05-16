@@ -42,6 +42,7 @@ export class Playlist implements Command {
         let embed = new MessageEmbed();
         embed.setTitle('**Queue:**')
             .setDescription(`${stitle}`)
+            .setColor('#3e51b5')
             .setThumbnail('https://cdn.discordapp.com/attachments/143882671179825153/975540913583583242/unknown.png')
             .setFooter({text: `Duration: ${queueDuration}`});
             
