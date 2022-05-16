@@ -2,12 +2,12 @@ import { getInfo } from 'ytdl-core';
 import { AudioResource, createAudioResource, demuxProbe } from '@discordjs/voice';
 import { raw as ytdl } from 'youtube-dl-exec';
 import { CommandContext } from '../models/command_context';
-import { User } from 'discord.js';
+import { Message, User } from 'discord.js';
 
 export interface TrackData {
 	id: number;
 	url: string;
-	author: string;
+	message: Message<boolean>;
 	title: string;
 	thumbnail: string;
 	duration: string;
@@ -36,7 +36,7 @@ const noop = () => { };
 export class Track implements TrackData {
 	public readonly id: number;
 	public readonly url: string;
-	public readonly author: string;
+	public readonly message: Message<boolean>;
 	public readonly title: string;
 	public readonly thumbnail: string;
 	public readonly duration: string;
@@ -46,10 +46,10 @@ export class Track implements TrackData {
 	public readonly onFinish: () => void;
 	public readonly onError: (error: Error) => void;
 
-	private constructor({ id, url, author, thumbnail, duration, rawDuration, ageRestricted, title, onStart, onFinish, onError }: TrackData) {
+	private constructor({ id, url, message, thumbnail, duration, rawDuration, ageRestricted, title, onStart, onFinish, onError }: TrackData) {
 		this.id = id;
 		this.url = url;
-		this.author = author;
+		this.message = message;
 		this.title = title;
 		this.thumbnail = thumbnail;
 		this.duration = duration;
@@ -103,7 +103,7 @@ export class Track implements TrackData {
 	 * @param methods Lifecycle callbacks
 	 * @returns The created Track
 	 */
-	public static async from(url: string, author: User, methods: Pick<Track, 'onStart' | 'onFinish' | 'onError'>): Promise<Track> {
+	public static async from(url: string, message: Message<boolean>, methods: Pick<Track, 'onStart' | 'onFinish' | 'onError'>): Promise<Track> {
 		const info = await getInfo(url);
 
 		// The methods are wrapped so that we can ensure that they are only called once.
@@ -128,7 +128,7 @@ export class Track implements TrackData {
 
 		return new Track({
 			id: id++,
-			author: author.tag,
+			message: message,
 			title: info.videoDetails.title,
 			thumbnail: thumbnail.url, 
 			duration: this.formatTime(info.videoDetails.lengthSeconds),
