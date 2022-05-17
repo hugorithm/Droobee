@@ -100,6 +100,7 @@ export class Track implements TrackData {
 	 * Creates a Track from a video URL and lifecycle callback methods.
 	 *
 	 * @param url The URL of the video
+	 * @param message The command sent by the user
 	 * @param methods Lifecycle callbacks
 	 * @returns The created Track
 	 */
