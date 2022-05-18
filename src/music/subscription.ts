@@ -189,7 +189,8 @@ export class MusicSubscription {
 	public getQueueDuration(): string {
 		const queue = this.getQueue();
 		const secs = queue.reduce((acc, q) => acc + q.rawDuration, 0);
-		return Track.formatTime(secs);
+		if (secs >= 3600) return Track.formatTime(secs, 'HH:mm:ss');
+		return Track.formatTime(secs, 'mm:ss');
 	}
 
 	public getCurrentSong(): Track | undefined {

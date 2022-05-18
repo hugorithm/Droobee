@@ -123,16 +123,16 @@ export class Track implements TrackData {
 			},
 		};
 
-		//order array by max aspect ration and get that value
+		//order array by max aspect ratio and get that value
 		const thumbnail = info.videoDetails.thumbnails.sort((a, b) => b.height * b.width - a.height * a.width)[0]; //assume first thumbnail
-		const qDuration = parseInt(info.videoDetails.lengthSeconds);
+		const qDuration = parseInt(info.videoDetails.lengthSeconds, 10);
 
 		return new Track({
 			id: id++,
 			message: message,
 			title: info.videoDetails.title,
-			thumbnail: thumbnail.url, 
-			duration: this.formatTime(info.videoDetails.lengthSeconds),
+			thumbnail: thumbnail.url,
+			duration: this.formatTime(info.videoDetails.lengthSeconds, 'mm:ss'),
 			rawDuration: qDuration,
 			ageRestricted: info.videoDetails.age_restricted,
 			url,
@@ -140,12 +140,22 @@ export class Track implements TrackData {
 		});
 	}
 
-	public static formatTime(time: string | number): string {
+	public static formatTime(time: string | number, format: string): string {
 		try {
-			const parsedTime = typeof time === 'string' ? parseInt(time) : time;
-			const minutes = Math.floor(parsedTime / 60);
-			const seconds = parsedTime - minutes * 60;
-			return minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+			const parsedTime = typeof time === 'string' ? parseInt(time, 10) : time;
+			if (format === 'mm:ss') {
+				const minutes = Math.floor(parsedTime / 60);
+				const seconds = parsedTime - minutes * 60;
+				return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+			} else if (format === 'HH:mm:ss') {
+				const hours = Math.floor(parsedTime / 3600);
+				const minutes = Math.floor((parsedTime - (hours * 3600)) / 60);
+				const seconds = parsedTime - (hours * 3600) - (minutes * 60);
+
+				return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+			} else {
+				throw new Error('Unknown format!');
+			}
 		} catch (err) {
 			throw err;
 		}
