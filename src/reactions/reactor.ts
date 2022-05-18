@@ -1,9 +1,9 @@
 import { Message } from 'discord.js';
 import { cfg } from '../cfg/cfg';
 
-const ACK_REACTIONS = ['👍', '🎮', '💚', '🍜'];
-const EXPIRED_REACTIONS = ['🖤'];
-const FAILURE_REACTIONS = ['⛔', '🚱'];
+const ACK_REACTIONS = ['👍', '👌', '❤️'];
+const EXPIRED_REACTIONS = ['💥'];
+const FAILURE_REACTIONS = ['⛔', '❌'];
 
 /** Gets a random element of an array. */
 const getRandom = (array: string[]) =>
