@@ -146,6 +146,7 @@ export class Track implements TrackData {
 			if (format === 'mm:ss') {
 				const minutes = Math.floor(parsedTime / 60);
 				const seconds = parsedTime - minutes * 60;
+				
 				return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 			} else if (format === 'HH:mm:ss') {
 				const hours = Math.floor(parsedTime / 3600);

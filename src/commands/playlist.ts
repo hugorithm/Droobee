@@ -39,8 +39,8 @@ export class Playlist implements Command {
 
         let embeds: MessageEmbed[] = [];
         let page = 0;
-        const totalPages = Math.ceil(ctracks.length / 10); //page size is 10, round number of pages to next int
-
+        const totalPages = Math.ceil(ctracks.length / 10); //page size is 10, round number of pages to next int.
+                                                           // As there are 10 embeds available per message, the max nubmer of songs on the queue should be 100 (10*10) 
         while (ctracks.length) {
             page++;
             const tracks = ctracks.splice(0, 10);
