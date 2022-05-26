@@ -30,7 +30,8 @@ const noop = () => { };
  * queue, it is converted into an AudioResource just in time for playback.
  */
 export class Track implements TrackData {
-	public readonly id: number = 0;
+	public static _id: number = 0;
+	public readonly id: number;
 	public readonly url: string;
 	public readonly message: Message<boolean>;
 	public readonly title: string;
@@ -43,7 +44,7 @@ export class Track implements TrackData {
 	public readonly onError: (error: Error) => void;
 
 	private constructor({ url, message, thumbnail, duration, rawDuration, ageRestricted, title, onStart, onFinish, onError }: TrackData) {
-		this.id++;
+		this.id = Track._id++;
 		this.url = url;
 		this.message = message;
 		this.title = title;
