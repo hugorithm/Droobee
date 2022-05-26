@@ -47,7 +47,7 @@ export class Playlist implements Command {
         while (ctracks.length) {
             page++;
             const tracks = ctracks.splice(0, 10);
-            const stitle = tracks.reduce((acc, t) => `${acc}${t.id + 1}. ${t.title} \n ${t.url} \`[${t.message.member?.nickname}]\` \n`, "");
+            const stitle = tracks.reduce((acc, t, i) => `${acc}${i + 1}. ${t.title} \n ${t.url} \`[${t.message.member?.nickname}]\` \n`, "");
             let embed = new MessageEmbed();
             embed.setTitle('**Queue:**')
                 .setDescription(stitle)

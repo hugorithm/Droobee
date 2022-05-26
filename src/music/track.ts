@@ -5,7 +5,6 @@ import { CommandContext } from '../models/command_context';
 import { Message, User } from 'discord.js';
 
 export interface TrackData {
-	id: number;
 	url: string;
 	message: Message<boolean>;
 	title: string;
@@ -17,9 +16,6 @@ export interface TrackData {
 	onFinish: () => void;
 	onError: (error: Error) => void;
 }
-
-
-let id = 0;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const noop = () => { };
@@ -34,7 +30,7 @@ const noop = () => { };
  * queue, it is converted into an AudioResource just in time for playback.
  */
 export class Track implements TrackData {
-	public readonly id: number;
+	public readonly id: number = 0;
 	public readonly url: string;
 	public readonly message: Message<boolean>;
 	public readonly title: string;
@@ -46,8 +42,8 @@ export class Track implements TrackData {
 	public readonly onFinish: () => void;
 	public readonly onError: (error: Error) => void;
 
-	private constructor({ id, url, message, thumbnail, duration, rawDuration, ageRestricted, title, onStart, onFinish, onError }: TrackData) {
-		this.id = id;
+	private constructor({ url, message, thumbnail, duration, rawDuration, ageRestricted, title, onStart, onFinish, onError }: TrackData) {
+		this.id++;
 		this.url = url;
 		this.message = message;
 		this.title = title;
@@ -128,7 +124,6 @@ export class Track implements TrackData {
 		const qDuration = parseInt(info.videoDetails.lengthSeconds, 10);
 
 		return new Track({
-			id: id++,
 			message: message,
 			title: info.videoDetails.title,
 			thumbnail: thumbnail.url,
