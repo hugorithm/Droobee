@@ -1,8 +1,7 @@
 import { getInfo } from 'ytdl-core';
 import { AudioResource, createAudioResource, demuxProbe } from '@discordjs/voice';
 import { raw as ytdl } from 'youtube-dl-exec';
-import { CommandContext } from '../models/command_context';
-import { Message, User } from 'discord.js';
+import { Message } from 'discord.js';
 
 export interface TrackData {
 	url: string;
