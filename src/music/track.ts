@@ -1,7 +1,7 @@
 import { getInfo } from 'ytdl-core';
 import { AudioResource, createAudioResource, demuxProbe } from '@discordjs/voice';
 import { raw as ytdl } from 'youtube-dl-exec';
-import { CommandContext } from '../models/command_context';
+import { Worker } from 'node:worker_threads';
 import { Message, User } from 'discord.js';
 
 export interface TrackData {
@@ -62,35 +62,23 @@ export class Track implements TrackData {
 	 */
 
 	public createAudioResource(): Promise<AudioResource<Track>> {
-		return new Promise((resolve, reject) => {
-			const process = ytdl(
-				this.url,
-				{
-					output: '-', //o
-					quiet: true, //q
-					format: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio', //f
-					limitRate: '100K', //r
-				},
-				{ stdio: ['ignore', 'pipe', 'ignore'] },
-			);
-			if (!process.stdout) {
-				reject(new Error('No stdout'));
-				return;
-			}
-			const stream = process.stdout;
-			const onError = (error: Error) => {
-				if (!process.killed) process.kill();
-				stream.resume();
-				reject(error);
-			};
-			process
-				.once('spawn', () => {
-					demuxProbe(stream)
-						.then((probe) => resolve(createAudioResource(probe.stream, { metadata: this, inputType: probe.type })))
-						.catch(onError);
-				})
-				.catch(onError);
-		});
+		const runService = () : Promise<AudioResource<Track>> => {
+			return new Promise((resolve, reject) => {
+				const worker = new Worker('./build/music/ytdl_process.js', { workerData: {track : this} });
+				worker.on('message', resolve);
+				worker.on('error', reject);
+				worker.on('exit', (code) => {
+					if (code !== 0)
+						reject(new Error(`Stopped with  ${code} exit code`));
+				});
+			});
+		}
+		
+		const run = async () => {
+			return await runService();
+		}
+		
+		return run();
 	}
 
 	/**
